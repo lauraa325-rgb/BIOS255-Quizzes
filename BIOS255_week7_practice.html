@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 7 — Comprehensive Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #2D1B4E;
+    --highlight: #F4A261;
+    --bg: #0f0f13;
+    --card: #1a1a22;
+    --text: #f0f0f0;
+    --muted: #888;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 20%, #2D1B4E22 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, #F4A26111 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 820px;
+  }
+
+  /* SPLASH */
+  #splash {
+    text-align: center;
+    padding: 60px 20px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .splash-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--highlight);
+    margin-bottom: 16px;
+  }
+  .splash-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(36px, 7vw, 72px);
+    font-weight: 800;
+    line-height: 1.0;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  .splash-title span { color: var(--highlight); }
+  .splash-sub {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+  .splash-count {
+    display: inline-block;
+    background: var(--card);
+    border: 1px solid #2D1B4E44;
+    border-radius: 100px;
+    padding: 8px 24px;
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+  .btn-start {
+    display: inline-block;
+    background: var(--highlight);
+    color: #000;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 18px 60px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 0 30px #F4A26155;
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 6px 40px #F4A26188; }
+
+  /* QUIZ */
+  #quiz { display: none; }
+  .progress-bar-wrap {
+    height: 4px;
+    background: #ffffff15;
+    border-radius: 4px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--highlight));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+  .q-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .q-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--highlight);
+  }
+  .q-score {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .q-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(20px, 3.5vw, 28px);
+    font-weight: 600;
+    line-height: 1.3;
+    color: #fff;
+    margin-bottom: 28px;
+    min-height: 80px;
+  }
+  .answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .ans-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    text-align: left;
+    transition: transform 0.1s, border-color 0.15s, background 0.15s;
+    animation: fadeUp 0.4s ease both;
+    line-height: 1.3;
+  }
+  .ans-btn:nth-child(1) { background: #E74C3C22; border-color: #E74C3C55; animation-delay: 0.05s; }
+  .ans-btn:nth-child(2) { background: #2980B922; border-color: #2980B955; animation-delay: 0.1s; }
+  .ans-btn:nth-child(3) { background: #F39C1222; border-color: #F39C1255; animation-delay: 0.15s; }
+  .ans-btn:nth-child(4) { background: #27AE6022; border-color: #27AE6055; animation-delay: 0.2s; }
+  .ans-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.2); }
+  .ans-btn:disabled { cursor: default; }
+  .ans-btn .badge {
+    min-width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .ans-btn:nth-child(1) .badge { background: #E74C3C; color: #fff; }
+  .ans-btn:nth-child(2) .badge { background: #2980B9; color: #fff; }
+  .ans-btn:nth-child(3) .badge { background: #F39C12; color: #fff; }
+  .ans-btn:nth-child(4) .badge { background: #27AE60; color: #fff; }
+  .ans-btn.correct { background: #27AE6044 !important; border-color: #27AE60 !important; }
+  .ans-btn.wrong { background: #E74C3C33 !important; border-color: #E74C3C !important; opacity: 0.7; }
+  .ans-btn.reveal { background: #27AE6022 !important; border-color: #27AE6088 !important; }
+
+  .feedback {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding: 0 4px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feedback.show { opacity: 1; }
+  .feedback.correct-fb { color: #2ecc71; }
+  .feedback.wrong-fb { color: #e74c3c; }
+
+  .btn-next {
+    width: 100%;
+    padding: 16px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: none;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn-next:hover { transform: translateY(-1px); opacity: 0.9; }
+
+  /* RESULTS */
+  #results {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .results-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .score-big {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(64px, 14vw, 120px);
+    font-weight: 800;
+    color: var(--highlight);
+    line-height: 1;
+    margin: 20px 0;
+    text-shadow: 0 0 60px #F4A26166;
+  }
+  .score-label {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .stat-box {
+    background: var(--card);
+    border: 1px solid #ffffff15;
+    border-radius: 10px;
+    padding: 20px 12px;
+  }
+  .stat-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--highlight);
+  }
+  .stat-lbl {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+  .btn-retry {
+    display: inline-block;
+    background: transparent;
+    color: var(--highlight);
+    border: 2px solid var(--highlight);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 16px 48px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    margin: 8px;
+  }
+  .btn-retry:hover { background: var(--highlight); color: #000; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 540px) {
+    .answers { grid-template-columns: 1fr; }
+    .results-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div id="splash">
+    <div class="splash-tag">BIOS 255 Practice</div>
+    <div class="splash-title">Week 7 —<br><span> Comprehensive Review</span></div>
+    <div class="splash-sub">BIOS 255 | Comprehensive Review Practice</div>
+    <div class="splash-count">49 questions &nbsp;·&nbsp; 20 sec each &nbsp;·&nbsp; Multiple choice</div>
+    <br>
+    <button class="btn-start" onclick="startQuiz()">START</button>
+  </div>
+
+  <div id="quiz">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progBar" style="width:0%"></div></div>
+    <div class="q-meta">
+      <div class="q-num" id="qNum">Question 1 / 49</div>
+      <div class="q-score" id="qScore">Score: 0</div>
+    </div>
+    <div class="q-text" id="qText"></div>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btnNext" onclick="nextQ()">Next →</button>
+  </div>
+
+  <div id="results">
+    <div class="results-title">Quiz Complete</div>
+    <div class="score-big" id="rScore"></div>
+    <div class="score-label" id="rLabel"></div>
+    <div class="results-grid">
+      <div class="stat-box"><div class="stat-val" id="rCorrect"></div><div class="stat-lbl">Correct</div></div>
+      <div class="stat-box"><div class="stat-val" id="rWrong"></div><div class="stat-lbl">Incorrect</div></div>
+      <div class="stat-box"><div class="stat-val" id="rPct"></div><div class="stat-lbl">Accuracy</div></div>
+    </div>
+    <button class="btn-retry" onclick="retryAll()">Try Again</button>
+    <button class="btn-retry" onclick="retryWrong()">Retry Missed</button>
+  </div>
+
+</div>
+<script>
+const ALL_Q = [{"q": "What do we call a negatively charged ion with more electrons than protons?", "a": ["Cation", "Isotope", "Anion", "Isomer"], "c": 2}, {"q": "Water moving across a semipermeable membrane toward lower water concentration is called what?", "a": ["Filtration", "Osmosis", "Diffusion", "Active transport"], "c": 1}, {"q": "What type of cell division produces two genetically identical daughter cells?", "a": ["Meiosis", "Mitosis", "Binary fission", "Budding"], "c": 1}, {"q": "A red blood cell placed in solution maintains its size and shape. What type of solution is this?", "a": ["Hypotonic", "Hypertonic", "Isotonic", "Hyperosmotic"], "c": 2}, {"q": "Which solution type would cause a red blood cell to crenate (shrivel)?", "a": ["Isotonic", "Hypotonic", "Distilled water", "Hypertonic"], "c": 3}, {"q": "Which reaction type joins smaller molecules into a larger one?", "a": ["Decomposition", "Exchange", "Synthesis", "Ionic"], "c": 2}, {"q": "Which biomolecule has primary, secondary, tertiary, and quaternary structural levels?", "a": ["Carbohydrates", "Fatty acids", "Proteins", "Nucleic acids"], "c": 2}, {"q": "Which epidermal layer is responsible for producing calluses?", "a": ["Stratum granulosum", "Stratum basale", "Stratum corneum", "Stratum spinosum"], "c": 2}, {"q": "Which gland type secretes sebum to lubricate skin and hair?", "a": ["Eccrine sweat glands", "Sebaceous glands", "Ceruminous glands", "Mammary glands"], "c": 1}, {"q": "Carpals and tarsals are examples of which bone shape classification?", "a": ["Long bones", "Short bones", "Flat bones", "Irregular bones"], "c": 1}, {"q": "Which bone cells build bone by secreting extracellular matrix?", "a": ["Osteocytes", "Osteoclasts", "Osteoblasts", "Osteoprogenitor cells"], "c": 2}, {"q": "Which region of a long bone contains the epiphyseal (growth) plate?", "a": ["Diaphysis", "Epiphysis", "Periosteum", "Endosteum"], "c": 1}, {"q": "Which bones belong to the appendicular skeleton?", "a": ["Vertebrae", "Occipital bone", "Femur", "Maxilla"], "c": 2}, {"q": "The shoulder and hip joints are classified as what specific joint type?", "a": ["Pivot", "Hinge", "Ball-and-socket", "Saddle"], "c": 2}, {"q": "Which connective tissue layer wraps individual muscle fibers?", "a": ["Epimysium", "Perimysium", "Endomysium", "Fascia"], "c": 2}, {"q": "Which sarcomere protein binds calcium to trigger muscle contraction?", "a": ["Myosin", "Actin", "Troponin", "Tropomyosin"], "c": 2}, {"q": "Which contraction type produces force without a change in muscle length?", "a": ["Isotonic concentric", "Isotonic eccentric", "Isometric", "Isokinetic"], "c": 2}, {"q": "What neurotransmitter is released at the neuromuscular junction?", "a": ["Dopamine", "Serotonin", "Acetylcholine", "GABA"], "c": 2}, {"q": "Where is calcium stored within a muscle cell?", "a": ["Sarcolemma", "Sarcomere", "Sarcoplasmic reticulum", "Nucleus"], "c": 2}, {"q": "Which muscles make up the hamstring group?", "a": ["Biceps brachii and triceps brachii", "Vastus lateralis and rectus femoris", "Biceps femoris, semitendinosus, semimembranosus", "Gastrocnemius and soleus"], "c": 2}, {"q": "Which autonomic division is more active during rest and digestion?", "a": ["Sympathetic", "Parasympathetic", "Somatic", "Enteric"], "c": 1}, {"q": "Which retinal cells are responsible for color vision in bright light?", "a": ["Rods", "Cones", "Ganglion cells", "Bipolar cells"], "c": 1}, {"q": "What is the white portion of the eye called?", "a": ["Choroid", "Cornea", "Sclera", "Retina"], "c": 2}, {"q": "Which hormone drives fight-or-flight, increasing heart rate and blood pressure?", "a": ["Insulin", "Melatonin", "Epinephrine", "Calcitonin"], "c": 2}, {"q": "Which brain lobe is the primary processing center for vision?", "a": ["Frontal", "Parietal", "Temporal", "Occipital"], "c": 3}, {"q": "Which cranial nerve pairing is INCORRECT?", "a": ["Facial - VII", "Trigeminal - V", "Abducens - IV", "Olfactory - I"], "c": 2}, {"q": "Which nerve type carries sensory signals from the body TO the CNS?", "a": ["Efferent nerves", "Motor nerves", "Afferent nerves", "Ramus nerves"], "c": 2}, {"q": "Which meningeal layer lies directly on the surface of the brain and spinal cord?", "a": ["Dura mater", "Arachnoid mater", "Pia mater", "Epineurium"], "c": 2}, {"q": "The vagus nerve (CN X) is a component of which division?", "a": ["Sympathetic nervous system", "Somatic nervous system", "Parasympathetic nervous system", "Enteric nervous system"], "c": 2}, {"q": "During which phase of an action potential does the membrane become more positive?", "a": ["Threshold", "Repolarization", "Hyperpolarization", "Depolarization (rising phase)"], "c": 3}, {"q": "Which channel type responds to mechanical pressure or stretch?", "a": ["Voltage-gated", "Ligand-gated", "Mechanically-gated", "Leak channels"], "c": 2}, {"q": "Which pancreatic hormone allows cells to take up and use glucose?", "a": ["Glucagon", "Prolactin", "Oxytocin", "Insulin"], "c": 3}, {"q": "Which blood type is the universal recipient?", "a": ["O+", "AB+", "A+", "B+"], "c": 1}, {"q": "Which heart valve separates the left atrium from the left ventricle?", "a": ["Aortic valve", "Pulmonary valve", "Tricuspid valve", "Mitral (bicuspid) valve"], "c": 3}, {"q": "Which leukocyte is considered a first responder and performs phagocytosis?", "a": ["Eosinophil", "Basophil", "Neutrophil", "Lymphocyte"], "c": 2}, {"q": "Systolic BP = 220 mmHg, diastolic = 120 mmHg. What is the pulse pressure?", "a": ["340 mmHg", "120 mmHg", "100 mmHg", "170 mmHg"], "c": 2}, {"q": "Which force most effectively draws fluid from interstitial space back into capillaries?", "a": ["Blood hydrostatic pressure", "Interstitial hydrostatic pressure", "Net filtration pressure", "Plasma colloid osmotic pressure"], "c": 3}, {"q": "Which vessel wall layer contains smooth muscle and regulates vessel radius?", "a": ["Tunica interna", "Tunica media", "Tunica externa", "Tunica adventitia"], "c": 1}, {"q": "Which ECG component represents ventricular depolarization?", "a": ["P wave", "QRS complex", "T wave", "PR interval"], "c": 1}, {"q": "Which structure is part of the respiratory zone where gas exchange occurs?", "a": ["Trachea", "Bronchi", "Alveoli", "Terminal bronchioles"], "c": 2}, {"q": "Which alveolar cell type secretes pulmonary surfactant?", "a": ["Type I alveolar cells", "Dust cells", "Type II alveolar cells", "Alveolar macrophages"], "c": 2}, {"q": "What is the PRIMARY function of the nasal cavity during respiration?", "a": ["Direct gas exchange", "Filter, warm, and humidify incoming air", "Prevent food from entering lungs", "Push air into the lungs"], "c": 1}, {"q": "Which anemia type results from excessive loss of red blood cells?", "a": ["Pernicious anemia", "Aplastic anemia", "Hemorrhagic anemia", "Thalassemia"], "c": 2}, {"q": "A breastfed infant receiving maternal antibodies is an example of what immunity?", "a": ["Natural active", "Artificial active", "Natural passive", "Artificial passive"], "c": 2}, {"q": "What is the primary role of the spleen in the lymphatic system?", "a": ["Produce lymph", "Filter blood and recycle old RBCs", "Produce antibodies", "Reabsorb interstitial fluid"], "c": 1}, {"q": "What structure prevents backflow within lymphatic vessels?", "a": ["Cilia", "Smooth muscle", "One-way valves", "Capillary walls"], "c": 2}, {"q": "Which lymphatic structure absorbs dietary fats from the small intestine?", "a": ["Lymph nodes", "Lacteals", "Cisterna chyli", "Thoracic duct"], "c": 1}, {"q": "Which lymphatic duct drains the right upper quadrant of the body?", "a": ["Thoracic duct", "Right lymphatic duct", "Left lymphatic duct", "Central duct"], "c": 1}, {"q": "Which cells are responsible for producing antibodies?", "a": ["T cells", "Natural killer cells", "Plasma cells (B cells)", "Neutrophils"], "c": 2}];
+let questions = [], idx = 0, score = 0, wrong = [], answered = false;
+
+function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
+
+function startQuiz() {
+  questions = shuffle([...ALL_Q]);
+  idx = 0; score = 0; wrong = [];
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  showQ();
+}
+
+function showQ() {
+  answered = false;
+  const q = questions[idx];
+  const total = questions.length;
+  document.getElementById('progBar').style.width = (idx / total * 100) + '%';
+  document.getElementById('qNum').textContent = 'Question ' + (idx+1) + ' / ' + total;
+  document.getElementById('qScore').textContent = 'Score: ' + score;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').innerHTML = '';
+  document.getElementById('btnNext').style.display = 'none';
+
+  const labels = ['A', 'B', 'C', 'D'];
+  const wrap = document.getElementById('answers');
+  wrap.innerHTML = '';
+  q.a.forEach((ans, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.innerHTML = '<span class="badge">' + labels[i] + '</span><span>' + ans + '</span>';
+    btn.onclick = () => pick(i, q.c);
+    wrap.appendChild(btn);
+  });
+}
+
+function pick(i, correct) {
+  if (answered) return;
+  answered = true;
+  const btns = document.querySelectorAll('.ans-btn');
+  const fb = document.getElementById('feedback');
+  btns.forEach(b => b.disabled = true);
+
+  if (i === correct) {
+    score++;
+    btns[i].classList.add('correct');
+    fb.className = 'feedback correct-fb show';
+    fb.innerHTML = '✓ Correct!';
+  } else {
+    btns[i].classList.add('wrong');
+    btns[correct].classList.add('reveal');
+    fb.className = 'feedback wrong-fb show';
+    fb.innerHTML = '✗ Incorrect — correct answer: ' + questions[idx].a[correct];
+    wrong.push(questions[idx]);
+  }
+  document.getElementById('btnNext').style.display = 'block';
+}
+
+function nextQ() {
+  idx++;
+  if (idx < questions.length) { showQ(); }
+  else { showResults(); }
+}
+
+function showResults() {
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  const total = questions.length;
+  const pct = Math.round(score / total * 100);
+  document.getElementById('rScore').textContent = pct + '%';
+  document.getElementById('rLabel').textContent = score + ' of ' + total + ' correct';
+  document.getElementById('rCorrect').textContent = score;
+  document.getElementById('rWrong').textContent = total - score;
+  document.getElementById('rPct').textContent = pct + '%';
+}
+
+function retryAll() { startQuiz(); }
+function retryWrong() {
+  if (wrong.length === 0) { retryAll(); return; }
+  questions = shuffle([...wrong]);
+  idx = 0; score = 0; wrong = [];
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  showQ();
+}
+</script>
+</body>
+</html>

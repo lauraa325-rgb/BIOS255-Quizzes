@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 5 — Immune System</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #0D7377;
+    --highlight: #14FFEC;
+    --bg: #0f0f13;
+    --card: #1a1a22;
+    --text: #f0f0f0;
+    --muted: #888;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 20%, #0D737722 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, #14FFEC11 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 820px;
+  }
+
+  /* SPLASH */
+  #splash {
+    text-align: center;
+    padding: 60px 20px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .splash-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--highlight);
+    margin-bottom: 16px;
+  }
+  .splash-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(36px, 7vw, 72px);
+    font-weight: 800;
+    line-height: 1.0;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  .splash-title span { color: var(--highlight); }
+  .splash-sub {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+  .splash-count {
+    display: inline-block;
+    background: var(--card);
+    border: 1px solid #0D737744;
+    border-radius: 100px;
+    padding: 8px 24px;
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+  .btn-start {
+    display: inline-block;
+    background: var(--highlight);
+    color: #000;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 18px 60px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 0 30px #14FFEC55;
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 6px 40px #14FFEC88; }
+
+  /* QUIZ */
+  #quiz { display: none; }
+  .progress-bar-wrap {
+    height: 4px;
+    background: #ffffff15;
+    border-radius: 4px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--highlight));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+  .q-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .q-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--highlight);
+  }
+  .q-score {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .q-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(20px, 3.5vw, 28px);
+    font-weight: 600;
+    line-height: 1.3;
+    color: #fff;
+    margin-bottom: 28px;
+    min-height: 80px;
+  }
+  .answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .ans-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    text-align: left;
+    transition: transform 0.1s, border-color 0.15s, background 0.15s;
+    animation: fadeUp 0.4s ease both;
+    line-height: 1.3;
+  }
+  .ans-btn:nth-child(1) { background: #E74C3C22; border-color: #E74C3C55; animation-delay: 0.05s; }
+  .ans-btn:nth-child(2) { background: #2980B922; border-color: #2980B955; animation-delay: 0.1s; }
+  .ans-btn:nth-child(3) { background: #F39C1222; border-color: #F39C1255; animation-delay: 0.15s; }
+  .ans-btn:nth-child(4) { background: #27AE6022; border-color: #27AE6055; animation-delay: 0.2s; }
+  .ans-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.2); }
+  .ans-btn:disabled { cursor: default; }
+  .ans-btn .badge {
+    min-width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .ans-btn:nth-child(1) .badge { background: #E74C3C; color: #fff; }
+  .ans-btn:nth-child(2) .badge { background: #2980B9; color: #fff; }
+  .ans-btn:nth-child(3) .badge { background: #F39C12; color: #fff; }
+  .ans-btn:nth-child(4) .badge { background: #27AE60; color: #fff; }
+  .ans-btn.correct { background: #27AE6044 !important; border-color: #27AE60 !important; }
+  .ans-btn.wrong { background: #E74C3C33 !important; border-color: #E74C3C !important; opacity: 0.7; }
+  .ans-btn.reveal { background: #27AE6022 !important; border-color: #27AE6088 !important; }
+
+  .feedback {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding: 0 4px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feedback.show { opacity: 1; }
+  .feedback.correct-fb { color: #2ecc71; }
+  .feedback.wrong-fb { color: #e74c3c; }
+
+  .btn-next {
+    width: 100%;
+    padding: 16px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: none;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn-next:hover { transform: translateY(-1px); opacity: 0.9; }
+
+  /* RESULTS */
+  #results {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .results-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .score-big {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(64px, 14vw, 120px);
+    font-weight: 800;
+    color: var(--highlight);
+    line-height: 1;
+    margin: 20px 0;
+    text-shadow: 0 0 60px #14FFEC66;
+  }
+  .score-label {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .stat-box {
+    background: var(--card);
+    border: 1px solid #ffffff15;
+    border-radius: 10px;
+    padding: 20px 12px;
+  }
+  .stat-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--highlight);
+  }
+  .stat-lbl {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+  .btn-retry {
+    display: inline-block;
+    background: transparent;
+    color: var(--highlight);
+    border: 2px solid var(--highlight);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 16px 48px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    margin: 8px;
+  }
+  .btn-retry:hover { background: var(--highlight); color: #000; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 540px) {
+    .answers { grid-template-columns: 1fr; }
+    .results-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div id="splash">
+    <div class="splash-tag">BIOS 255 Practice</div>
+    <div class="splash-title">Week 5 —<br><span> Immune System</span></div>
+    <div class="splash-sub">BIOS 255 | Immune System Practice</div>
+    <div class="splash-count">20 questions &nbsp;·&nbsp; 20 sec each &nbsp;·&nbsp; Multiple choice</div>
+    <br>
+    <button class="btn-start" onclick="startQuiz()">START</button>
+  </div>
+
+  <div id="quiz">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progBar" style="width:0%"></div></div>
+    <div class="q-meta">
+      <div class="q-num" id="qNum">Question 1 / 20</div>
+      <div class="q-score" id="qScore">Score: 0</div>
+    </div>
+    <div class="q-text" id="qText"></div>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btnNext" onclick="nextQ()">Next →</button>
+  </div>
+
+  <div id="results">
+    <div class="results-title">Quiz Complete</div>
+    <div class="score-big" id="rScore"></div>
+    <div class="score-label" id="rLabel"></div>
+    <div class="results-grid">
+      <div class="stat-box"><div class="stat-val" id="rCorrect"></div><div class="stat-lbl">Correct</div></div>
+      <div class="stat-box"><div class="stat-val" id="rWrong"></div><div class="stat-lbl">Incorrect</div></div>
+      <div class="stat-box"><div class="stat-val" id="rPct"></div><div class="stat-lbl">Accuracy</div></div>
+    </div>
+    <button class="btn-retry" onclick="retryAll()">Try Again</button>
+    <button class="btn-retry" onclick="retryWrong()">Retry Missed</button>
+  </div>
+
+</div>
+<script>
+const ALL_Q = [{"q": "Which characteristic distinguishes adaptive immunity from innate immunity?", "a": ["Faster response time", "Nonspecific targeting of any pathogen", "Specific targeting + immunological memory", "Present at birth, always active"], "c": 2}, {"q": "Skin's acid mantle has pH 3-5. What is its primary defensive role?", "a": ["Activates complement on skin surface", "Inhibits bacterial growth on the skin", "Triggers mast cell degranulation", "Denatures viral capsid proteins"], "c": 1}, {"q": "Lysozyme is in tears, saliva, and mucus. How does it destroy bacteria?", "a": ["Triggers apoptosis of bacterial cells", "Blocks bacterial DNA replication", "Enzymatically cleaves bacterial cell walls", "Neutralizes bacterial toxins"], "c": 2}, {"q": "NK cells destroy targets WITHOUT prior antigen exposure. How?", "a": ["Antibody production against surface antigens", "Perforins and granzymes causing apoptosis", "Complement activation via classical pathway", "MHC II antigen presentation to T helpers"], "c": 1}, {"q": "Interferons warn neighboring cells. Who does NOT benefit from the signal?", "a": ["The neighboring uninfected cells", "The infected cell that secretes them", "NK cells activated by interferons", "Macrophages stimulated by interferons"], "c": 1}, {"q": "Which complement pathway is triggered by antibody-antigen complexes?", "a": ["Alternative pathway", "Lectin pathway", "Classical pathway", "Membrane attack pathway"], "c": 2}, {"q": "What directly causes fluid to move into tissues during inflammation?", "a": ["Increased lymphocyte production", "Increased capillary permeability", "Decreased blood pressure at injury site", "Complement MAC pore formation"], "c": 1}, {"q": "Moderate fever is BENEFICIAL. Which is a documented advantage?", "a": ["Increases antibody half-life in blood", "Reduces pain at the infection site", "Liver sequesters iron, starving pathogens", "Activates the alternative complement pathway"], "c": 2}, {"q": "A cancer cell displays a fragment on MHC Class I. What happens next?", "a": ["CD4+ T helper coordinates via interleukins", "CD8+ T cytotoxic activates and kills the cell", "B cell produces antibodies against the cancer", "NK cell presents antigen to dendritic cells"], "c": 1}, {"q": "T cell NEGATIVE selection in the thymus eliminates which cells?", "a": ["T cells that cannot recognize self-MHC", "T cells binding self-antigen too strongly", "T cells with too few surface receptors", "T cells reactive to foreign antigens only"], "c": 1}, {"q": "CD4+ T helper cells coordinate immunity. What two responses do they activate?", "a": ["NK cells and complement cascade", "CD8+ T cytotoxic cells AND B cells", "Mast cells and eosinophils", "Dendritic cells and neutrophils"], "c": 1}, {"q": "After B cell clonal expansion, what is the plasma cell's primary job?", "a": ["Kill infected cells via perforins", "Present antigens on MHC II to T cells", "Secrete antibodies against the antigen", "Become long-lived memory B cells"], "c": 2}, {"q": "Antivenom exploits which antibody function to neutralize snake venom?", "a": ["Opsonization \u2014 tagging venom for phagocytes", "Agglutination \u2014 clumping venom proteins", "Neutralization \u2014 blocking venom from host cells", "Complement fixation \u2014 lysing venom-coated cells"], "c": 2}, {"q": "In a PRIMARY immune response, which Ig appears first and why?", "a": ["IgG \u2014 most abundant, fastest to produce", "IgA \u2014 protects mucosal entry points first", "IgM \u2014 naive B cells produce it before class switching", "IgE \u2014 triggers mast cells to contain infection"], "c": 2}, {"q": "IgA in breast milk provides what type of immunity to a nursing infant?", "a": ["Artificial active immunity", "Natural active immunity", "Artificial passive immunity", "Natural passive immunity"], "c": 3}, {"q": "IgE sits on mast cells/basophils. What triggers degranulation?", "a": ["Complement activation at cell surface", "Allergen cross-linking two IgE molecules", "Repeated antigen exposure to plasma cells", "MHC I recognition by cytotoxic T cells"], "c": 1}, {"q": "TB skin test reaction at 48 hrs \u2014 which hypersensitivity type?", "a": ["Type I \u2014 IgE/mast cell mediated", "Type II \u2014 IgG/IgM binds cell surfaces", "Type III \u2014 immune complex deposition", "Type IV \u2014 delayed T cell-mediated, no antibodies"], "c": 3}, {"q": "HIV gp120 targets which cells, causing immune collapse?", "a": ["CD8+ T cytotoxic cells and NK cells", "CD4+ T helpers, macrophages, dendritic cells", "B cells and plasma cells only", "Neutrophils and eosinophils only"], "c": 1}, {"q": "At what CD4+ count is an HIV patient diagnosed with AIDS?", "a": ["Less than 500 cells per microliter", "Less than 350 cells per microliter", "Less than 200 cells per microliter", "Less than 100 cells per microliter"], "c": 2}, {"q": "What is the KEY distinction between SCID and AIDS?", "a": ["SCID = T cells only; AIDS = B cells only", "SCID is acquired; AIDS is genetic", "SCID is genetic from birth; AIDS is acquired", "SCID = innate; AIDS = adaptive only"], "c": 2}];
+let questions = [], idx = 0, score = 0, wrong = [], answered = false;
+
+function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
+
+function startQuiz() {
+  questions = shuffle([...ALL_Q]);
+  idx = 0; score = 0; wrong = [];
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  showQ();
+}
+
+function showQ() {
+  answered = false;
+  const q = questions[idx];
+  const total = questions.length;
+  document.getElementById('progBar').style.width = (idx / total * 100) + '%';
+  document.getElementById('qNum').textContent = 'Question ' + (idx+1) + ' / ' + total;
+  document.getElementById('qScore').textContent = 'Score: ' + score;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').innerHTML = '';
+  document.getElementById('btnNext').style.display = 'none';
+
+  const labels = ['A', 'B', 'C', 'D'];
+  const wrap = document.getElementById('answers');
+  wrap.innerHTML = '';
+  q.a.forEach((ans, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.innerHTML = '<span class="badge">' + labels[i] + '</span><span>' + ans + '</span>';
+    btn.onclick = () => pick(i, q.c);
+    wrap.appendChild(btn);
+  });
+}
+
+function pick(i, correct) {
+  if (answered) return;
+  answered = true;
+  const btns = document.querySelectorAll('.ans-btn');
+  const fb = document.getElementById('feedback');
+  btns.forEach(b => b.disabled = true);
+
+  if (i === correct) {
+    score++;
+    btns[i].classList.add('correct');
+    fb.className = 'feedback correct-fb show';
+    fb.innerHTML = '✓ Correct!';
+  } else {
+    btns[i].classList.add('wrong');
+    btns[correct].classList.add('reveal');
+    fb.className = 'feedback wrong-fb show';
+    fb.innerHTML = '✗ Incorrect — correct answer: ' + questions[idx].a[correct];
+    wrong.push(questions[idx]);
+  }
+  document.getElementById('btnNext').style.display = 'block';
+}
+
+function nextQ() {
+  idx++;
+  if (idx < questions.length) { showQ(); }
+  else { showResults(); }
+}
+
+function showResults() {
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  const total = questions.length;
+  const pct = Math.round(score / total * 100);
+  document.getElementById('rScore').textContent = pct + '%';
+  document.getElementById('rLabel').textContent = score + ' of ' + total + ' correct';
+  document.getElementById('rCorrect').textContent = score;
+  document.getElementById('rWrong').textContent = total - score;
+  document.getElementById('rPct').textContent = pct + '%';
+}
+
+function retryAll() { startQuiz(); }
+function retryWrong() {
+  if (wrong.length === 0) { retryAll(); return; }
+  questions = shuffle([...wrong]);
+  idx = 0; score = 0; wrong = [];
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  showQ();
+}
+</script>
+</body>
+</html>
