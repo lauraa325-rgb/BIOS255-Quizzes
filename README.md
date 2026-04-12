@@ -1,5 +1,5 @@
 BIOS255 Practice Quizzes
-Interactive Kahoot-style practice quizzes for BIOS 255 (Anatomy & Physiology) students at Chamberlain University.
+Interactive Kahoot-style practice quizzes for BIOS 255 (Anatomy & Physiology) 
 Live Quizzes
 WeekTopicLinkWeek 5Immune SystemPlay →Week 6Respiratory SystemPlay →Week 7Comprehensive ReviewPlay →
 How to Use
