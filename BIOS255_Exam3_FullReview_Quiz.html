@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIOS 255 — Exam 3 Full Review: Weeks 5, 6 & 7</title>
+<style>
+  :root {
+    --navy:#1B3A6B; --teal:#2E8B9A; --gold:#C9A84C;
+    --light-bg:#F4F7FB; --white:#ffffff;
+    --correct:#2E7D32; --correct-bg:#E8F5E9;
+    --wrong:#C62828; --wrong-bg:#FFEBEE;
+    --text:#1a1a2e; --muted:#5a6478;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--light-bg);color:var(--text);min-height:100vh;}
+  header{background:var(--navy);color:white;padding:1.5rem 2rem;text-align:center;border-bottom:4px solid var(--gold);}
+  header h1{font-size:1.5rem;font-weight:700;}
+  header p{font-size:0.9rem;color:#B8CCEE;margin-top:0.3rem;}
+  .week-badges{display:flex;justify-content:center;gap:0.6rem;margin-top:0.75rem;flex-wrap:wrap;}
+  .week-badge{background:rgba(255,255,255,0.15);color:white;border-radius:20px;padding:0.2rem 0.8rem;font-size:0.8rem;font-weight:600;}
+  .progress-bar-wrap{background:#1a2e55;height:6px;}
+  .progress-bar{background:var(--gold);height:6px;transition:width 0.4s ease;width:0%;}
+  .quiz-wrap{max-width:780px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+  .status-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;font-size:0.9rem;color:var(--muted);}
+  .badge{background:var(--navy);color:white;border-radius:20px;padding:0.25rem 0.85rem;font-size:0.85rem;font-weight:600;}
+  .slide-ref{font-size:0.78rem;font-weight:600;color:var(--gold);background:rgba(27,58,107,0.07);border-radius:4px;padding:0.15rem 0.5rem;display:inline-block;margin-bottom:0.4rem;}
+  .category-tag{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--teal);margin-bottom:0.4rem;}
+  .card{background:white;border-radius:12px;padding:2rem;box-shadow:0 2px 12px rgba(27,58,107,0.08);border:1px solid #dde4f0;}
+  .question-text{font-size:1.12rem;font-weight:600;line-height:1.55;color:var(--navy);margin-bottom:1.5rem;}
+  .options{display:flex;flex-direction:column;gap:0.75rem;}
+  .option-btn{display:flex;align-items:center;gap:0.9rem;background:var(--light-bg);border:2px solid #dde4f0;border-radius:8px;padding:0.85rem 1.1rem;cursor:pointer;text-align:left;font-size:1rem;font-family:Calibri,'Segoe UI',Arial,sans-serif;color:var(--text);transition:border-color 0.15s,background 0.15s;line-height:1.4;}
+  .option-btn:hover:not(:disabled){border-color:var(--teal);background:#EBF5F7;}
+  .option-btn:disabled{cursor:default;}
+  .option-btn.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--correct);font-weight:600;}
+  .option-btn.wrong{border-color:var(--wrong);background:var(--wrong-bg);color:var(--wrong);}
+  .option-btn.revealed{border-color:var(--correct);background:var(--correct-bg);color:var(--correct);}
+  .letter{display:flex;align-items:center;justify-content:center;width:30px;height:30px;min-width:30px;border-radius:50%;background:white;border:2px solid #c5d0e5;font-weight:700;font-size:0.85rem;color:var(--navy);}
+  .option-btn.correct .letter{background:var(--correct);border-color:var(--correct);color:white;}
+  .option-btn.wrong .letter{background:var(--wrong);border-color:var(--wrong);color:white;}
+  .option-btn.revealed .letter{background:var(--correct);border-color:var(--correct);color:white;}
+  .feedback{margin-top:1.25rem;padding:1rem 1.2rem;border-radius:8px;font-size:0.95rem;line-height:1.55;display:none;}
+  .feedback.correct{background:var(--correct-bg);border-left:4px solid var(--correct);color:#1b4d1e;}
+  .feedback.wrong{background:var(--wrong-bg);border-left:4px solid var(--wrong);color:#7a1515;}
+  .feedback-label{font-weight:700;margin-bottom:0.3rem;}
+  .nav-row{display:flex;justify-content:flex-end;margin-top:1.5rem;}
+  .btn-next{background:var(--navy);color:white;border:none;padding:0.75rem 2rem;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;display:none;font-family:Calibri,'Segoe UI',Arial,sans-serif;transition:background 0.15s;}
+  .btn-next:hover{background:var(--teal);}
+  /* Results */
+  .results{display:none;text-align:center;}
+  .score-circle{width:140px;height:140px;border-radius:50%;background:var(--navy);color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1.5rem;}
+  .score-num{font-size:2.2rem;font-weight:700;line-height:1;}
+  .score-lbl{font-size:0.8rem;color:#B8CCEE;}
+  .results h2{color:var(--navy);font-size:1.4rem;margin-bottom:0.5rem;}
+  .results p{color:var(--muted);margin-bottom:1.5rem;}
+  .grade-badge{display:inline-block;background:var(--gold);color:var(--navy);font-weight:700;font-size:1.1rem;padding:0.4rem 1.2rem;border-radius:20px;margin-bottom:1.5rem;}
+  .results-breakdown{text-align:left;background:white;border-radius:10px;padding:1.2rem 1.5rem;border:1px solid #dde4f0;margin-bottom:1.5rem;}
+  .results-breakdown h3{color:var(--navy);margin-bottom:0.8rem;font-size:1rem;}
+  .cat-row{display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid #eef2f8;font-size:0.9rem;}
+  .cat-row:last-child{border-bottom:none;}
+  .btn-restart{background:var(--teal);color:white;border:none;padding:0.85rem 2.5rem;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;font-family:Calibri,'Segoe UI',Arial,sans-serif;}
+  .btn-restart:hover{background:var(--navy);}
+  footer{text-align:center;padding:1.5rem;font-size:0.82rem;color:var(--muted);border-top:1px solid #dde4f0;background:white;}
+</style>
+</head>
+<body>
+<header>
+  <h1>BIOS 255 — Exam 3 Full Review</h1>
+  <p>Laura A. Bates, DC &nbsp;|&nbsp; Spring 2026</p>
+  <div class="week-badges">
+    <span class="week-badge">Week 5: Immune System</span>
+    <span class="week-badge">Week 6: Respiratory Anatomy</span>
+    <span class="week-badge">Week 7: Respiratory Physiology</span>
+  </div>
+</header>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="quiz-wrap">
+  <div id="quizScreen">
+    <div class="status-row">
+      <span id="questionCounter">Question 1 of 49</span>
+      <span class="badge" id="scoreBadge">Score: 0</span>
+    </div>
+    <div class="card">
+      <div class="category-tag" id="categoryTag"></div>
+      <div class="slide-ref" id="slideRef"></div>
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="optionsContainer"></div>
+      <div class="feedback" id="feedbackBox">
+        <div class="feedback-label" id="feedbackLabel"></div>
+        <div id="feedbackText"></div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-next" id="btnNext" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </div>
+
+  <div class="results card" id="resultsScreen">
+    <div class="score-circle"><div class="score-num" id="finalScore"></div><div class="score-lbl">SCORE</div></div>
+    <div class="grade-badge" id="gradeBadge"></div>
+    <h2 id="resultsHeading"></h2>
+    <p id="resultsSubtext"></p>
+    <div class="results-breakdown" id="breakdownBox"></div>
+    <button class="btn-restart" onclick="restartQuiz()">Retake Quiz</button>
+  </div>
+</div>
+<footer>Laura A. Bates, DC &nbsp;|&nbsp; BIOS 255 – Anatomy &amp; Physiology III &nbsp;|&nbsp; Spring 2026</footer>
+
+<script>
+const questions = [
+  // ── WEEK 5: IMMUNE SYSTEM ──
+  {cat:"Wk5 · Three Lines of Defense", slide:"Slides 3–4",
+   q:"Which line of defense is the FIRST to respond to a pathogen?",
+   opts:["Adaptive immunity — B cells produce antibodies","External barriers — skin and mucous membranes","Complement system activation","T cell clonal expansion"],
+   ans:1, exp:"The first line = external barriers: skin (keratin, acid mantle) and mucous membranes (mucus, cilia). These physical and chemical barriers prevent pathogens from entering the body at all. No prior exposure is needed — they are always active."},
+
+  {cat:"Wk5 · Three Lines of Defense", slide:"Slides 3–4",
+   q:"Which feature uniquely distinguishes adaptive immunity from innate immunity?",
+   opts:["Faster response time — acts within minutes","Nonspecific — attacks any foreign material","Immunological memory — faster, stronger response on re-exposure","First line of physical defense"],
+   ans:2, exp:"Immunological memory is the defining feature of adaptive immunity. After the first exposure, memory B and T cells remain. On re-exposure, the secondary response is faster and stronger — this is also the basis of vaccination."},
+
+  {cat:"Wk5 · Second Line of Defense", slide:"Slide 8",
+   q:"Interferons released by virally infected cells primarily function to:",
+   opts:["Directly destroy the virus inside the secreting cell","Warn neighboring cells to upregulate antiviral defenses","Stimulate B cell antibody production","Activate the complement membrane attack complex"],
+   ans:1, exp:"Interferons do NOT save the infected cell — they warn neighbors to prepare antiviral defenses and activate NK cells and macrophages. Interferon-alpha is used clinically to treat hepatitis C and certain cancers."},
+
+  {cat:"Wk5 · Phagocytosis", slide:"Slide 15",
+   q:"In phagocytosis, which step immediately follows phagosome formation?",
+   opts:["Recognition and attachment","Engulfment via pseudopods","Fusion with lysosome to form phagolysosome","Migration to lymph node"],
+   ans:2, exp:"Sequence: (1) Recognition/attachment → (2) Engulfment → (3) Phagosome formation → (4) Fusion with lysosome → (5) Antigen presentation → (6) Migration to lymph node. M. tuberculosis survives by preventing step 4 (lysosome fusion)."},
+
+  {cat:"Wk5 · Second Line of Defense", slide:"Slide 7",
+   q:"Which cell type is the KEY bridge between innate and adaptive immunity?",
+   opts:["Neutrophils","NK natural killer cells","Dendritic cells / Langerhans cells","Eosinophils"],
+   ans:2, exp:"Dendritic cells (APCs) phagocytize pathogens, display antigen fragments on MHC Class II, then migrate to lymph nodes to present antigen to naïve T cells. This handoff from innate to adaptive immunity is essential for a targeted response."},
+
+  {cat:"Wk5 · Second Line of Defense", slide:"Slide 7",
+   q:"Natural killer (NK) cells destroy infected or cancerous cells by:",
+   opts:["Producing antibodies targeting the infected cell","Releasing perforins and granzymes to induce apoptosis","Activating the classical complement pathway","Presenting antigen fragments on MHC Class II"],
+   ans:1, exp:"NK cells require NO prior antigen exposure. They kill cells with 'missing self' — cells that have downregulated MHC-I (cancer often does this). Perforins punch holes in the target cell membrane; granzymes enter and trigger apoptosis."},
+
+  {cat:"Wk5 · MHC & Antigen Presentation", slide:"Slide 14",
+   q:"MHC Class I molecules display antigens to which lymphocyte type?",
+   opts:["CD4+ Helper T cells","B cells","CD8+ Cytotoxic T cells","Dendritic cells"],
+   ans:2, exp:"MHC Class I is on ALL nucleated cells and displays what's happening INSIDE the cell. CD8+ cytotoxic T cells read this signal. If the cell is infected or cancerous → cytotoxic T kills it. Think: Class I + CD8 = kill the infected cell."},
+
+  {cat:"Wk5 · MHC & Antigen Presentation", slide:"Slide 14",
+   q:"Which cells express MHC Class II to present externally captured antigens?",
+   opts:["All nucleated cells in the body","Only APCs: dendritic cells, macrophages, B cells","Only cytotoxic T cells","Only NK cells and neutrophils"],
+   ans:1, exp:"MHC Class II is restricted to professional antigen-presenting cells (dendritic cells, macrophages, B cells). It displays fragments of EXTERNALLY captured pathogens to CD4+ helper T cells, which then coordinate the full adaptive response."},
+
+  {cat:"Wk5 · T Cells", slide:"Slides 16, 18",
+   q:"Helper T cells (CD4+) are the central coordinators of adaptive immunity because they:",
+   opts:["Directly kill infected cells via perforins","Produce antibodies during secondary response","Activate BOTH cytotoxic T cells AND B cells via interleukins","Recognize antigens on MHC Class I only"],
+   ans:2, exp:"Without CD4+ helper T cells, neither arm of adaptive immunity functions fully. They receive signals from APCs via MHC Class II and then send activation signals to both cytotoxic T cells (cell-mediated) and B cells (humoral). HIV destroys exactly these cells."},
+
+  {cat:"Wk5 · T Cells", slide:"Slides 16, 18",
+   q:"Which immune cells are progressively destroyed in HIV infection?",
+   opts:["CD8+ cytotoxic T cells","CD4+ helper T cells","B lymphocytes / plasma cells","NK natural killer cells"],
+   ans:1, exp:"HIV infects CD4+ helper T cells (also macrophages and dendritic cells). As CD4+ count drops below 200 cells/μL, the patient meets the AIDS diagnosis threshold. The loss of CD4+ cells collapses BOTH humoral and cell-mediated immunity."},
+
+  {cat:"Wk5 · B Cells & Humoral Immunity", slide:"Slide 19",
+   q:"Which cells are the 'antibody factories' responsible for producing immunoglobulins?",
+   opts:["Memory B cells","Helper T cells","Plasma cells (differentiated B cells)","Cytotoxic T cells"],
+   ans:2, exp:"After clonal selection and activation by helper T cells, most B cell clones differentiate into plasma cells — short-lived antibody factories. A smaller subset becomes long-lived memory B cells for future rapid response."},
+
+  {cat:"Wk5 · B Cells & Humoral Immunity", slide:"Slide 18",
+   q:"Which cells destroy virally infected and cancerous cells directly via cytotoxic enzymes?",
+   opts:["Plasma B cells","CD8+ cytotoxic T cells","Helper T cells","Regulatory T cells"],
+   ans:1, exp:"CD8+ cytotoxic T cells bind cells displaying foreign antigens on MHC Class I and release perforins (punch holes) and granzymes (trigger apoptosis). This is cell-mediated immunity — no antibodies involved."},
+
+  {cat:"Wk5 · Immunoglobulins", slide:"Slide 23",
+   q:"Which immunoglobulin is produced FIRST during a primary immune response?",
+   opts:["IgA","IgG","IgM","IgE"],
+   ans:2, exp:"IgM is the first responder — a pentamer produced within 3–6 days of first antigen exposure. Elevated IgM in a blood test indicates a current or very recent new infection. IgG follows and dominates the secondary response."},
+
+  {cat:"Wk5 · Immunoglobulins", slide:"Slide 23",
+   q:"IgG is clinically important in pregnancy because it:",
+   opts:["Triggers mast cell degranulation in the fetus","Crosses the placenta to provide passive immunity to the fetus","Is found primarily in breast milk and tears","Is the first antibody produced in a primary response"],
+   ans:1, exp:"IgG is the only immunoglobulin that crosses the placenta, providing the fetus with passive immunity against antigens the mother has been exposed to. This protection lasts several months after birth while the infant's own immune system matures."},
+
+  {cat:"Wk5 · Immunoglobulins", slide:"Slide 23",
+   q:"Which immunoglobulin is primarily responsible for allergic reactions and anaphylaxis?",
+   opts:["IgM","IgG","IgA","IgE"],
+   ans:3, exp:"IgE is the allergy antibody. It binds to receptors on mast cells and basophils. When an allergen cross-links IgE on a mast cell, degranulation releases histamine → vasodilation, bronchoconstriction, and the anaphylactic response."},
+
+  {cat:"Wk5 · Immunoglobulins", slide:"Slide 23",
+   q:"IgA is concentrated in secretions such as saliva, tears, and breast milk because:",
+   opts:["It is the most abundant antibody in blood","It crosses the placenta for fetal protection","It provides mucosal immunity at body surface barriers","It activates the complement classical pathway"],
+   ans:2, exp:"IgA (a dimer in secretions) is the guardian of mucosal surfaces — the first internal line against pathogens trying to enter via mucous membranes. Via breast milk it also provides passive mucosal immunity to nursing infants."},
+
+  {cat:"Wk5 · Antibody Functions", slide:"Slides 21–22",
+   q:"Which antibody function coats a pathogen to tag it for phagocytosis?",
+   opts:["Neutralization","Agglutination","Opsonization","Precipitation"],
+   ans:2, exp:"Opsonization = coating the pathogen with antibody (and sometimes complement) so phagocytes can bind the Fc region and engulf the target more efficiently. Think of it as gift-wrapping a pathogen for a macrophage."},
+
+  {cat:"Wk5 · Antibody Functions", slide:"Slides 21–22",
+   q:"Which antibody function blocks pathogen surface molecules to prevent host cell entry?",
+   opts:["Opsonization","Neutralization","Complement fixation","ADCC"],
+   ans:1, exp:"Neutralization is especially important against viruses and toxins — antibodies bind to the surface structures the pathogen uses to attach to host cells, physically blocking entry. Neutralizing antibodies are the goal of many vaccines."},
+
+  {cat:"Wk5 · Hypersensitivity", slide:"Slide 31",
+   q:"Type I hypersensitivity (anaphylaxis) is mediated by which immunoglobulin?",
+   opts:["IgG","IgM","IgA","IgE"],
+   ans:3, exp:"Type I = IgE-mediated. On first allergen exposure, IgE is produced and binds mast cells. On re-exposure, allergen cross-links the IgE → mast cell degranulation → histamine release → vasodilation, bronchoconstriction, systemic reaction. Treat with epinephrine."},
+
+  {cat:"Wk5 · Hypersensitivity", slide:"Slide 31",
+   q:"Which hypersensitivity type is T-cell mediated, involves NO antibodies, and occurs 12–72 hours after exposure?",
+   opts:["Type I — IgE mediated anaphylaxis","Type II — cytotoxic antibody reaction","Type III — immune complex deposition","Type IV — delayed T-cell mediated"],
+   ans:3, exp:"Type IV (delayed hypersensitivity) is the only type without antibodies — it requires T cell recruitment and activation. Classic examples: poison ivy contact dermatitis, TB skin test (PPD), organ transplant rejection. The 12–72 hour delay is the exam clue."},
+
+  {cat:"Wk5 · Immunodeficiency", slide:"Slides 33–34",
+   q:"AIDS is diagnosed when CD4+ T cell count drops below:",
+   opts:["500 cells/μL","350 cells/μL","200 cells/μL","100 cells/μL"],
+   ans:2, exp:"AIDS diagnosis threshold = CD4+ < 200 cells/μL. Normal CD4+ count is 500–1500 cells/μL. Below 200, the immune system is so compromised that opportunistic infections (PCP pneumonia, CMV, Kaposi's sarcoma) develop freely."},
+
+  {cat:"Wk5 · Immunodeficiency", slide:"Slides 33–34",
+   q:"SCID differs from AIDS in that SCID:",
+   opts:["Is acquired through viral infection over time","Only destroys CD4+ T helper cells","Is a genetic condition present at birth with BOTH B and T cell deficiency","Can be treated with antiretroviral drugs"],
+   ans:2, exp:"SCID = Severe Combined ImmunoDeficiency — genetic, present at birth, affects BOTH B and T lymphocytes → complete adaptive immune collapse. Even minor infections are life-threatening. Treatment: bone marrow transplant. Contrast with AIDS: acquired, destroys CD4+ only, over years."},
+
+  {cat:"Wk5 · Active vs. Passive Immunity", slide:"Slides 27–28",
+   q:"Which form of immunity provides IMMEDIATE but SHORT-TERM protection with no memory cells?",
+   opts:["Active natural immunity — from natural infection","Active artificial immunity — vaccination","Passive immunity — receiving pre-formed antibodies","Cell-mediated immunity via cytotoxic T cells"],
+   ans:2, exp:"Passive immunity = receiving pre-formed antibodies from an external source. Immediate protection (antibodies are already there), but short-term (2–3 weeks, no memory cells formed). Examples: antivenom, rabies Ig, IgG across placenta, IgA in breast milk."},
+
+  // ── WEEK 6: RESPIRATORY ANATOMY ──
+  {cat:"Wk6 · Conducting vs. Respiratory Zone", slide:"Slides 3, 5",
+   q:"The conducting zone is also called anatomical dead space because:",
+   opts:["It contains no blood vessels","Air moves through it but no gas exchange occurs (~150 mL)","It is located outside the thoracic cavity","It produces surfactant instead of exchanging gases"],
+   ans:1, exp:"The conducting zone (nose → terminal bronchioles) transports, warms, filters, and humidifies air but has no alveoli for gas exchange. Its ~150 mL volume is 'wasted' per breath from a gas-exchange standpoint — this is anatomical dead space."},
+
+  {cat:"Wk6 · Conducting vs. Respiratory Zone", slide:"Slides 3, 5",
+   q:"Gas exchange first begins in which structure, marking the start of the respiratory zone?",
+   opts:["Terminal bronchioles","Segmental bronchi","Respiratory bronchioles","Primary bronchi"],
+   ans:2, exp:"Respiratory bronchioles are the transition — they have scattered alveoli budding from their walls, making them the first site of any gas exchange. Terminal bronchioles immediately proximal to them are still conducting zone only."},
+
+  {cat:"Wk6 · Upper Respiratory Tract", slide:"Slides 7, 9",
+   q:"The right main bronchus is more prone to aspiration of foreign bodies than the left because it is:",
+   opts:["Longer, narrower, and more horizontal","Wider, shorter, and more vertical","Protected by more cartilage rings","Connected directly to the larynx"],
+   ans:1, exp:"Right main bronchus: wider, shorter, more vertical = a more direct path from the trachea. Foreign bodies, aspirated food, and aspiration pneumonia preferentially go right. Clinical pearl: always consider right lower lobe first in aspiration pneumonia."},
+
+  {cat:"Wk6 · Upper Respiratory Tract", slide:"Slides 6–7",
+   q:"Which pharyngeal region is lined with pseudostratified ciliated columnar epithelium because it carries air ONLY?",
+   opts:["Oropharynx","Laryngopharynx","Nasopharynx","Hypopharynx"],
+   ans:2, exp:"Nasopharynx = air only → pseudostratified ciliated columnar epithelium (same as the rest of the respiratory tract). Oropharynx and laryngopharynx carry both air AND food → stratified squamous epithelium (durable, abrasion-resistant). Epithelium type follows function."},
+
+  {cat:"Wk6 · Lower Respiratory Tract", slide:"Slide 9",
+   q:"The C-shaped cartilage rings of the trachea are open posteriorly to accommodate:",
+   opts:["The larynx sitting directly behind it","The esophagus and trachealis muscle contraction during swallowing","The carina bifurcation","The phrenic nerve pathway"],
+   ans:1, exp:"The open posterior gap of each C-ring faces the esophagus. The trachealis muscle bridges this gap. When you swallow, the esophagus expands into this space. During coughing, the trachealis contracts, narrowing the trachea to increase airflow velocity."},
+
+  {cat:"Wk6 · Lung Anatomy", slide:"Slide 11",
+   q:"The cardiac notch is a feature of which lung, and what accommodates it?",
+   opts:["Right lung — accommodates the liver below","Left lung — accommodates the position of the heart","Both lungs — provides attachment for the pleura","Right lung — accommodates the aortic arch"],
+   ans:1, exp:"The left lung has only 2 lobes (no middle lobe) and a cardiac notch on its mediastinal surface — this concave indentation accommodates the heart, which sits left of center. The lingula is the tongue-like tip of the left superior lobe that wraps around the cardiac notch."},
+
+  {cat:"Wk6 · Alveolar Cell Types", slide:"Slide 12",
+   q:"Type II alveolar cells prevent alveolar collapse during exhalation by:",
+   opts:["Performing gas exchange across the thin squamous membrane","Phagocytizing dust and bacteria in the alveolar lumen","Secreting surfactant which reduces surface tension","Forming tight junctions to seal alveolar walls"],
+   ans:2, exp:"Type II cells (great/cuboidal pneumocytes) secrete surfactant — a phospholipid mixture that reduces surface tension inside alveoli. Without surfactant, alveoli collapse on exhalation (like blowing up a balloon that sticks together). NRDS in premature infants = insufficient surfactant."},
+
+  {cat:"Wk6 · Alveolar Cell Types", slide:"Slide 12",
+   q:"Which alveolar cell covers ~95% of the alveolar surface and is the actual site of gas exchange?",
+   opts:["Type II alveolar cells (great pneumocytes)","Alveolar macrophages (dust cells)","Type I alveolar cells (squamous pneumocytes)","Goblet cells"],
+   ans:2, exp:"Type I alveolar cells are extremely thin, flat squamous cells — their minimal thickness (~0.5 µm, thinner than one cell) is what makes rapid gas diffusion possible. They cannot divide; Type II cells regenerate them when damaged."},
+
+  {cat:"Wk6 · Pleural Membranes", slide:"Slide 15",
+   q:"Intrapleural pressure is always sub-atmospheric (negative) because:",
+   opts:["The diaphragm creates a partial vacuum on contraction","Lungs pull inward while chest wall pulls outward — this tug creates sustained negative pressure","Surfactant reduces pressure inside the alveoli","Pleural fluid absorbs atmospheric pressure"],
+   ans:1, exp:"The lung's elastic recoil pulls it inward while the chest wall's recoil pulls it outward. The pleural space is between them — this tension creates a permanent negative pressure (~-4 mmHg at rest) that keeps the lungs inflated against the chest wall."},
+
+  {cat:"Wk6 · Pleural Membranes", slide:"Slide 15",
+   q:"A pneumothorax causes lung collapse because:",
+   opts:["Blood fills the pleural cavity compressing the heart","Air enters the pleural cavity, eliminating negative intrapleural pressure","Surfactant is destroyed by incoming air","The diaphragm is paralyzed by the pressure change"],
+   ans:1, exp:"When air enters the pleural cavity (trauma, spontaneous rupture), the negative intrapleural pressure is lost — the lung's elastic recoil is no longer counterbalanced and the lung collapses. Treatment: needle decompression or chest tube to restore negative pressure."},
+
+  {cat:"Wk6 · Lung Volumes", slide:"Slide 23",
+   q:"Vital capacity (VC) is a key clinical metric because it is reduced in:",
+   opts:["Obstructive disease only — air trapping reduces VC from below","Restrictive disease only — stiff lungs reduce VC from above","Both restrictive AND obstructive disease, though by different mechanisms","Neither — VC is only reduced in neuromuscular disease"],
+   ans:2, exp:"In restrictive disease: stiff lungs can't expand → all volumes shrink → VC decreases. In obstructive disease: air trapping raises RV → less room for VC → VC decreases from the bottom up. The mechanism differs but VC falls in both. It's the most clinically monitored spirometry value."},
+
+  {cat:"Wk6 · Lung Volumes", slide:"Slide 23",
+   q:"TLC increases in emphysema because:",
+   opts:["Surfactant production increases to compensate","Alveolar wall destruction reduces elastic recoil — air traps and RV rises","The diaphragm flattens permanently from chronic hyperinflation","All lung volumes increase proportionally"],
+   ans:1, exp:"Emphysema destroys alveolar walls, eliminating the elastic tissue. Without elastic recoil, air traps — RV and FRC rise. The chest barrel-shapes. TLC increases because more air is permanently trapped. On spirometry, the floor of the graph rises significantly."},
+
+  {cat:"Wk6 · Respiratory Structure Functions", slide:"Slide 17",
+   q:"Which respiratory structure is primarily responsible for phonation (sound production)?",
+   opts:["Trachea","Epiglottis","Larynx","Pharynx"],
+   ans:2, exp:"The larynx contains the true vocal cords — vibration of these structures produces sound. The arytenoid cartilages control pitch. The thyroid cartilage (Adam's apple) protects the cords. Testosterone-driven growth of the thyroid cartilage explains voice deepening in males at puberty."},
+
+  {cat:"Wk6 · Respiratory System Functions", slide:"Slide 17",
+   q:"Which respiratory system function involves converting angiotensin I to angiotensin II?",
+   opts:["Gas exchange at the alveoli","Blood pressure regulation — pulmonary endothelium contains ACE","Filtration of small emboli from venous blood","Platelet production in lung capillaries"],
+   ans:1, exp:"The pulmonary capillary endothelium contains angiotensin-converting enzyme (ACE), which converts angiotensin I → angiotensin II → vasoconstriction + aldosterone release → elevated blood pressure. This is why ACE inhibitors are used to treat hypertension."},
+
+  // ── WEEK 7: RESPIRATORY PHYSIOLOGY ──
+  {cat:"Wk7 · Muscles of Respiration", slide:"W7 Slide 6",
+   q:"A spinal cord injury at C2 causes immediate respiratory failure primarily because:",
+   opts:["The external intercostals are denervated at that level","The phrenic nerve (C3–C5) is disrupted — eliminating diaphragm function entirely","The vagus nerve controlling expiration is severed","The abdominal muscles can no longer assist forced expiration"],
+   ans:1, exp:"The phrenic nerve exits at C3–C5. An injury AT or ABOVE C3 severs all phrenic nerve signals → the diaphragm is completely paralyzed → immediate respiratory arrest → permanent ventilator dependence. 'C3, 4, 5 keeps the diaphragm alive.'"},
+
+  {cat:"Wk7 · Dead Space & Ventilation", slide:"W7 Slide 5",
+   q:"A patient breathes 20 times/min with TV=500 mL and dead space=150 mL. What is their alveolar ventilation rate (AVR)?",
+   opts:["10,000 mL/min","7,000 mL/min","4,500 mL/min","6,000 mL/min"],
+   ans:1, exp:"AVR = (TV − Dead Space) × RR = (500 − 150) × 20 = 350 × 20 = 7,000 mL/min. MRV = 500 × 20 = 10,000 mL/min. The difference (3,000 mL/min) is wasted in dead space — never reaching alveoli for gas exchange."},
+
+  {cat:"Wk7 · Lung Disorders", slide:"W7 Slide 7",
+   q:"Emphysema has BOTH obstructive and restrictive components because:",
+   opts:["It causes bronchoconstriction AND thickens the respiratory membrane","Alveolar wall destruction traps air (obstructive) AND reduces diffusion surface area (restrictive component)","It elevates RV while simultaneously increasing TLC to normal","It only affects upper lobes, restricting both conduction and exchange"],
+   ans:1, exp:"Emphysema destroys alveolar walls → (1) Loss of elastic recoil = air trapping, elevated RV, barrel chest — obstructive pattern. (2) Loss of alveolar surface area = reduced diffusion capacity — restrictive component. The FEV₁/FVC ratio is reduced and diffusion capacity (DLCO) is low."},
+
+  {cat:"Wk7 · Gas Laws", slide:"W7 Slide 8",
+   q:"A climber at high altitude develops hypoxia primarily because:",
+   opts:["CO₂ concentration increases in inspired air","Lower atmospheric pressure reduces PO₂ — the smaller gradient drives less O₂ into blood","Hemoglobin affinity for oxygen increases abnormally at altitude","Alveolar surface area decreases with altitude"],
+   ans:1, exp:"Dalton's Law: PO₂ = % O₂ × atmospheric pressure. At altitude, atmospheric pressure drops → PO₂ drops (even though O₂ is still 21% of air). Smaller alveolar PO₂ gradient → less O₂ loading into blood. Adaptation: RBCs increase, BPG rises to offload more O₂."},
+
+  {cat:"Wk7 · Gas Exchange Factors", slide:"W7 Slide 9",
+   q:"A patient with pulmonary fibrosis has normal chest movement and RR but SpO₂ of 84%. The most likely mechanism is:",
+   opts:["Decreased alveolar surface area from alveolar wall destruction","V/Q mismatch from pulmonary embolism","Thickened respiratory membrane from scarring impairs diffusion","Reduced hemoglobin production causing anemia"],
+   ans:2, exp:"Pulmonary fibrosis = scarring thickens the respiratory membrane from the normal ~0.5 µm to several times that. Diffusion rate is inversely proportional to membrane thickness (Fick's Law). The patient ventilates normally — the problem is at the diffusion barrier, not the airflow."},
+
+  {cat:"Wk7 · O₂ Transport & Bohr Effect", slide:"W7 Slide 10",
+   q:"Working muscles during exercise receive more O₂ than resting muscles because:",
+   opts:["Cardiac output raises hemoglobin concentration in working capillaries","Increased CO₂ and decreased pH right-shift the curve — Hb releases O₂ more readily (Bohr Effect)","BPG decreases during exercise, shifting the curve left","Hemoglobin binds more O₂ at higher temperatures"],
+   ans:1, exp:"The Bohr Effect: active muscles produce CO₂ and H⁺ (lower pH) → right shift of oxyhemoglobin dissociation curve → Hb releases O₂ more readily at those tissues. The harder the tissue works, the more CO₂ it produces, the more O₂ hemoglobin delivers. Elegant physiological feedback."},
+
+  {cat:"Wk7 · CO Poisoning", slide:"W7 Slide 11",
+   q:"A confused patient with SpO₂ 99% is suspected of CO poisoning. Why does the pulse ox read normal?",
+   opts:["CO increases O₂ binding, artificially elevating true SpO₂","Pulse oximetry cannot distinguish carboxyhemoglobin from oxyhemoglobin — it reads both as 'occupied'","CO poisoning doesn't affect hemoglobin until very late stages","Hyperventilation compensated by raising true PO₂"],
+   ans:1, exp:"Standard pulse oximetry detects light absorption at two wavelengths — it sees 'hemoglobin with something bound' but cannot differentiate O₂ from CO. The device reads falsely normal. You need a co-oximeter (blood gas analyzer) to measure true carboxyhemoglobin. This is Trap #2 in CO poisoning."},
+
+  {cat:"Wk7 · CO₂ Transport", slide:"W7 Slide 12",
+   q:"During the chloride shift, Cl⁻ enters the RBC in exchange for HCO₃⁻ leaving because:",
+   opts:["Chloride catalyzes carbonic anhydrase activity inside the RBC","Electrical neutrality must be maintained as negatively charged bicarbonate exits","CO₂ and Cl⁻ compete for the same hemoglobin binding site","Chloride acts as a pH buffer inside the RBC"],
+   ans:1, exp:"As HCO₃⁻ exits the RBC into plasma, the cell would become electrically positive. To maintain neutrality, Cl⁻ enters in exchange. This swap is the chloride shift. It allows ~90% of CO₂ to travel safely as bicarbonate in plasma without dramatically disrupting RBC ion balance."},
+
+  {cat:"Wk7 · Respiratory Centers", slide:"W7 Slide 14",
+   q:"Which respiratory center is the primary pacemaker that sets the basic rhythm of breathing?",
+   opts:["Dorsal Respiratory Group (DRG) — medulla","Pontine Respiratory Group (PRG) — pons","Ventral Respiratory Group (VRG) — medulla","Apneustic center — lower pons"],
+   ans:2, exp:"The VRG (ventral respiratory group) in the medulla is the master controller — sets the rhythm like a metronome, fires the phrenic nerve for inspiration, and controls forced expiration. The DRG adjusts based on sensory input; the PRG (pons) fine-tunes and smooths patterns."},
+
+  {cat:"Wk7 · Chemoreceptors", slide:"W7 Slide 16",
+   q:"CO₂ — not O₂ — is the primary driver of breathing in healthy people because:",
+   opts:["O₂ receptors in the medulla are structurally less sensitive","CO₂ crosses the blood-brain barrier → lowers CSF pH → directly stimulates central chemoreceptors","Peripheral chemoreceptors only respond to CO₂, not O₂","O₂ levels rarely fall enough under normal conditions to trigger a response"],
+   ans:1, exp:"CO₂ crosses the blood-brain barrier and reacts with CSF water → carbonic acid → H⁺, dropping pH. Central chemoreceptors in the medulla detect this pH drop and drive increased ventilation. Under normal conditions, O₂ stays high enough that peripheral chemoreceptors aren't strongly activated."},
+
+  {cat:"Wk7 · Breathing Patterns", slide:"W7 Slide 17",
+   q:"Kussmaul breathing in a patient with DKA represents:",
+   opts:["Respiratory acidosis from CO₂ retention","Compensatory hyperventilation to blow off CO₂ and raise blood pH in metabolic acidosis","CNS suppression from ketone accumulation","V/Q mismatch from diabetic cardiomyopathy"],
+   ans:1, exp:"In DKA, massive ketone production drops blood pH (metabolic acidosis). The brain drives deep, rapid breathing to blow off CO₂ → less carbonic acid → pH rises toward normal. This respiratory compensation is Kussmaul breathing. It looks labored and is easily recognized clinically."},
+
+  {cat:"Wk7 · Respiratory Diseases", slide:"W7 Slide 18",
+   q:"SARS-CoV-2 causes severe hypoxia specifically because it targets:",
+   opts:["Type I alveolar cells — destroying the gas exchange membrane","Type II alveolar cells — eliminating surfactant production and causing alveolar collapse","Pulmonary capillary endothelium — causing massive hemorrhage","Central chemoreceptors — suppressing the drive to breathe"],
+   ans:1, exp:"SARS-CoV-2 preferentially infects Type II alveolar cells (which express ACE2 receptors). Destruction of Type II cells → loss of surfactant → alveolar collapse (atelectasis) → profound V/Q mismatch and hypoxia. This is why severe COVID presents like ARDS. Survivors may develop pulmonary fibrosis."},
+];
+
+let current=0, score=0, answered=false, shuffled=[];
+const cats={};
+
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function init(){
+  shuffled=shuffle([...questions]);
+  current=0; score=0;
+  Object.keys(cats).forEach(k=>delete cats[k]);
+  document.getElementById('quizScreen').style.display='';
+  document.getElementById('resultsScreen').style.display='none';
+  loadQuestion();
+}
+
+function loadQuestion(){
+  answered=false;
+  const q=shuffled[current];
+  document.getElementById('questionCounter').textContent=`Question ${current+1} of ${shuffled.length}`;
+  document.getElementById('scoreBadge').textContent=`Score: ${score}`;
+  document.getElementById('progressBar').style.width=`${(current/shuffled.length)*100}%`;
+  document.getElementById('categoryTag').textContent=q.cat;
+  document.getElementById('slideRef').textContent=q.slide;
+  document.getElementById('questionText').innerHTML=q.q;
+
+  const container=document.getElementById('optionsContainer');
+  container.innerHTML='';
+  ['A','B','C','D'].forEach((letter,i)=>{
+    const btn=document.createElement('button');
+    btn.className='option-btn';
+    btn.innerHTML=`<span class="letter">${letter}</span><span>${q.opts[i]}</span>`;
+    btn.onclick=()=>selectAnswer(i,q.ans,q.exp,q.cat);
+    container.appendChild(btn);
+  });
+
+  document.getElementById('feedbackBox').style.display='none';
+  document.getElementById('feedbackBox').className='feedback';
+  document.getElementById('btnNext').style.display='none';
+}
+
+function selectAnswer(chosen,correct,explanation,cat){
+  if(answered)return;
+  answered=true;
+  const btns=document.querySelectorAll('.option-btn');
+  btns.forEach(b=>b.disabled=true);
+  if(!cats[cat])cats[cat]={right:0,total:0};
+  cats[cat].total++;
+
+  const fb=document.getElementById('feedbackBox');
+  fb.style.display='block';
+
+  if(chosen===correct){
+    score++;
+    cats[cat].right++;
+    btns[chosen].classList.add('correct');
+    fb.className='feedback correct';
+    document.getElementById('feedbackLabel').textContent='✓ Correct!';
+  } else {
+    btns[chosen].classList.add('wrong');
+    btns[correct].classList.add('revealed');
+    fb.className='feedback wrong';
+    document.getElementById('feedbackLabel').textContent=`✗ Incorrect — correct answer: ${['A','B','C','D'][correct]}`;
+  }
+  document.getElementById('feedbackText').innerHTML=explanation;
+  document.getElementById('scoreBadge').textContent=`Score: ${score}`;
+  document.getElementById('btnNext').style.display='block';
+}
+
+function nextQuestion(){
+  current++;
+  if(current>=shuffled.length)showResults();
+  else loadQuestion();
+}
+
+function showResults(){
+  document.getElementById('progressBar').style.width='100%';
+  document.getElementById('quizScreen').style.display='none';
+  const rs=document.getElementById('resultsScreen');
+  rs.style.display='block';
+  const pct=Math.round((score/shuffled.length)*100);
+  document.getElementById('finalScore').textContent=`${score}/${shuffled.length}`;
+  let grade,heading,sub;
+  if(pct>=90){grade='A';heading='Exam ready!';sub='Outstanding command of all three weeks. You are ready for Exam 3.';}
+  else if(pct>=80){grade='B';heading='Great work!';sub='Strong performance — review the topics you missed and you\'ll be set.';}
+  else if(pct>=70){grade='C';heading='Good effort.';sub='Read through the feedback explanations for missed questions before the exam.';}
+  else{grade='D/F';heading='Keep studying!';sub='Focus on your lowest-scoring categories below and retry.';}
+  document.getElementById('gradeBadge').textContent=`${pct}% — ${grade}`;
+  document.getElementById('resultsHeading').textContent=heading;
+  document.getElementById('resultsSubtext').textContent=sub;
+
+  let html='<h3>Performance by Topic</h3>';
+  Object.entries(cats).forEach(([cat,data])=>{
+    const p=Math.round((data.right/data.total)*100);
+    const color=p>=80?'#2E7D32':p>=60?'#E65100':'#C62828';
+    html+=`<div class="cat-row"><span>${cat}</span><span style="font-weight:600;color:${color}">${data.right}/${data.total} (${p}%)</span></div>`;
+  });
+  document.getElementById('breakdownBox').innerHTML=html;
+}
+
+function restartQuiz(){init();}
+init();
+</script>
+</body>
+</html>
