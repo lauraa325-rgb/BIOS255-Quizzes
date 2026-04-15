@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIOS 255 — Exam 3 Review: Respiratory Physiology</title>
+<style>
+  :root {
+    --navy: #1B3A6B; --teal: #2E8B9A; --gold: #C9A84C;
+    --light-bg: #F4F7FB; --white: #ffffff;
+    --correct: #2E7D32; --correct-bg: #E8F5E9;
+    --wrong: #C62828; --wrong-bg: #FFEBEE;
+    --text: #1a1a2e; --muted: #5a6478;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Calibri, 'Segoe UI', Arial, sans-serif; background: var(--light-bg); color: var(--text); min-height: 100vh; }
+  header { background: var(--navy); color: white; padding: 1.5rem 2rem; text-align: center; border-bottom: 4px solid var(--gold); }
+  header h1 { font-size: 1.5rem; font-weight: 700; }
+  header p { font-size: 0.9rem; color: #B8CCEE; margin-top: 0.3rem; }
+  .progress-bar-wrap { background: #1a2e55; height: 6px; }
+  .progress-bar { background: var(--gold); height: 6px; transition: width 0.4s ease; width: 0%; }
+  .quiz-wrap { max-width: 780px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  .status-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--muted); }
+  .badge { background: var(--navy); color: white; border-radius: 20px; padding: 0.25rem 0.85rem; font-size: 0.85rem; font-weight: 600; }
+  .category-tag { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--teal); margin-bottom: 0.6rem; }
+  .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 12px rgba(27,58,107,0.08); border: 1px solid #dde4f0; }
+  .question-text { font-size: 1.15rem; font-weight: 600; line-height: 1.55; color: var(--navy); margin-bottom: 1.5rem; }
+  .options { display: flex; flex-direction: column; gap: 0.75rem; }
+  .option-btn { display: flex; align-items: center; gap: 0.9rem; background: var(--light-bg); border: 2px solid #dde4f0; border-radius: 8px; padding: 0.85rem 1.1rem; cursor: pointer; text-align: left; font-size: 1rem; font-family: Calibri, 'Segoe UI', Arial, sans-serif; color: var(--text); transition: border-color 0.15s, background 0.15s; line-height: 1.4; }
+  .option-btn:hover:not(:disabled) { border-color: var(--teal); background: #EBF5F7; }
+  .option-btn:disabled { cursor: default; }
+  .option-btn.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); font-weight: 600; }
+  .option-btn.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
+  .option-btn.revealed { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+  .letter { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; min-width: 30px; border-radius: 50%; background: white; border: 2px solid #c5d0e5; font-weight: 700; font-size: 0.85rem; color: var(--navy); }
+  .option-btn.correct .letter { background: var(--correct); border-color: var(--correct); color: white; }
+  .option-btn.wrong .letter { background: var(--wrong); border-color: var(--wrong); color: white; }
+  .option-btn.revealed .letter { background: var(--correct); border-color: var(--correct); color: white; }
+  .feedback { margin-top: 1.25rem; padding: 1rem 1.2rem; border-radius: 8px; font-size: 0.95rem; line-height: 1.55; display: none; }
+  .feedback.correct { background: var(--correct-bg); border-left: 4px solid var(--correct); color: #1b4d1e; }
+  .feedback.wrong { background: var(--wrong-bg); border-left: 4px solid var(--wrong); color: #7a1515; }
+  .feedback-label { font-weight: 700; margin-bottom: 0.3rem; }
+  .nav-row { display: flex; justify-content: flex-end; margin-top: 1.5rem; }
+  .btn-next { background: var(--navy); color: white; border: none; padding: 0.75rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; display: none; font-family: Calibri, 'Segoe UI', Arial, sans-serif; transition: background 0.15s; }
+  .btn-next:hover { background: var(--teal); }
+  .results { display: none; text-align: center; }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; background: var(--navy); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
+  .score-num { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+  .score-lbl { font-size: 0.8rem; color: #B8CCEE; }
+  .results h2 { color: var(--navy); font-size: 1.4rem; margin-bottom: 0.5rem; }
+  .results p { color: var(--muted); margin-bottom: 1.5rem; }
+  .grade-badge { display: inline-block; background: var(--gold); color: var(--navy); font-weight: 700; font-size: 1.1rem; padding: 0.4rem 1.2rem; border-radius: 20px; margin-bottom: 1.5rem; }
+  .results-breakdown { text-align: left; background: white; border-radius: 10px; padding: 1.2rem 1.5rem; border: 1px solid #dde4f0; margin-bottom: 1.5rem; }
+  .results-breakdown h3 { color: var(--navy); margin-bottom: 0.8rem; font-size: 1rem; }
+  .cat-row { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid #eef2f8; font-size: 0.9rem; }
+  .cat-row:last-child { border-bottom: none; }
+  .btn-restart { background: var(--teal); color: white; border: none; padding: 0.85rem 2.5rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; font-family: Calibri, 'Segoe UI', Arial, sans-serif; }
+  .btn-restart:hover { background: var(--navy); }
+  footer { text-align: center; padding: 1.5rem; font-size: 0.82rem; color: var(--muted); border-top: 1px solid #dde4f0; background: white; }
+</style>
+</head>
+<body>
+<header>
+  <h1>BIOS 255 — Exam 3 Review: Respiratory Physiology</h1>
+  <p>Structures · Mechanics · Gas Exchange · Volumes &amp; Transport &nbsp;|&nbsp; Laura A. Bates, DC &nbsp;|&nbsp; Spring 2026</p>
+</header>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="quiz-wrap">
+  <div id="quizScreen">
+    <div class="status-row">
+      <span id="questionCounter">Question 1 of 31</span>
+      <span class="badge" id="scoreBadge">Score: 0</span>
+    </div>
+    <div class="card">
+      <div class="category-tag" id="categoryTag"></div>
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="optionsContainer"></div>
+      <div class="feedback" id="feedbackBox">
+        <div class="feedback-label" id="feedbackLabel"></div>
+        <div id="feedbackText"></div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-next" id="btnNext" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </div>
+
+  <div class="results card" id="resultsScreen">
+    <div class="score-circle"><div class="score-num" id="finalScore"></div><div class="score-lbl">SCORE</div></div>
+    <div class="grade-badge" id="gradeBadge"></div>
+    <h2 id="resultsHeading"></h2>
+    <p id="resultsSubtext"></p>
+    <div class="results-breakdown" id="breakdownBox"></div>
+    <button class="btn-restart" onclick="restartQuiz()">Retake Quiz</button>
+  </div>
+</div>
+
+<footer>Laura A. Bates, DC &nbsp;|&nbsp; BIOS 255 – Anatomy &amp; Physiology III &nbsp;|&nbsp; Spring 2026</footer>
+
+<script>
+const questions = [
+  // --- RESPIRATORY ANATOMY ---
+  {cat:"Respiratory Anatomy", q:"Which structure connects the larynx to the primary bronchi?",
+   opts:["Pharynx","Trachea","Bronchioles","Nasal cavity"], ans:1,
+   exp:"The trachea (windpipe) connects the larynx above to the two primary (main) bronchi below. It is reinforced by C-shaped cartilage rings. The arrow in the exam image pointed directly to this structure."},
+  {cat:"Respiratory Anatomy", q:"The left lung differs from the right lung because it lacks which lobe?",
+   opts:["Superior lobe","Inferior lobe","Middle lobe","Posterior lobe"], ans:2,
+   exp:"The right lung has three lobes (superior, middle, inferior). The left lung has only two (superior and inferior) — the middle lobe is absent, replaced by the cardiac notch to accommodate the heart."},
+  {cat:"Respiratory Anatomy", q:"Which nasal structure increases surface area to enhance air filtration and conditioning?",
+   opts:["Nares","Vestibule","Conchae (turbinates)","Epiglottis"], ans:2,
+   exp:"The conchae (turbinates) are scroll-like projections of bone covered in mucosa that dramatically increase surface area in the nasal cavity. This maximizes contact time for warming, filtering, and humidifying inspired air."},
+  {cat:"Respiratory Anatomy", q:"What prevents food and liquid from entering the trachea during swallowing?",
+   opts:["Carina","Uvula","Epiglottis","Vocal cords"], ans:2,
+   exp:"The epiglottis folds down over the glottis during swallowing, directing food into the esophagus and away from the trachea. When this mechanism fails, aspiration occurs — a major risk for pneumonia."},
+  {cat:"Respiratory Anatomy", q:"Respiratory bronchioles branch directly into which structures?",
+   opts:["Terminal bronchioles","Main bronchi","Alveolar ducts","Alveolar sacs"], ans:2,
+   exp:"The airway hierarchy: trachea → main bronchi → lobar bronchi → segmental bronchi → terminal bronchioles → respiratory bronchioles → alveolar ducts → alveolar sacs → alveoli. Respiratory bronchioles are the first structures with alveoli budding from their walls."},
+  {cat:"Respiratory Anatomy", q:"Which small airways are the last conducting structures and lead directly to the alveoli?",
+   opts:["Main bronchi","Bronchioles","Segmental bronchi","Trachea"], ans:1,
+   exp:"Bronchioles (specifically terminal and respiratory bronchioles) are the smallest conducting airways. They lack cartilage and rely on smooth muscle tone. The exam image showed the small branching airways labeled as bronchioles."},
+  {cat:"Respiratory Anatomy", q:"Which structures make up the upper respiratory tract?",
+   opts:["Trachea, bronchi, and alveoli","Nasal cavity, pharynx, and larynx","Bronchioles and alveolar ducts","Diaphragm and intercostal muscles"], ans:1,
+   exp:"The upper respiratory tract = nasal cavity, pharynx, and larynx. Everything below the larynx (trachea onward) is lower respiratory tract. This is a commonly tested boundary — the larynx is the landmark dividing upper from lower."},
+  {cat:"Respiratory Anatomy", q:"Why is the nasal cavity lined with mucosa and cilia?",
+   opts:["To produce surfactant for the alveoli","To regulate airflow velocity","To warm, filter, and humidify incoming air","To store oxygen between breaths"], ans:2,
+   exp:"The nasal mucosa warms air to body temperature, the mucus traps particles (filtering), and cilia sweep debris toward the throat. Together these condition air before it reaches the delicate lower airways and alveoli."},
+
+  // --- RESPIRATORY MECHANICS ---
+  {cat:"Respiratory Mechanics", q:"Which muscles are primarily responsible for quiet inspiration?",
+   opts:["Scalenes and sternocleidomastoid","Internal intercostals and diaphragm","Diaphragm and external intercostals","Rectus abdominis and diaphragm"], ans:2,
+   exp:"Quiet inspiration uses only two muscles: the diaphragm (provides ~2/3 of airflow, innervated by phrenic nerve C3–C5) and the external intercostals (elevate ribs, provide ~1/3). Accessory muscles are only recruited during forced or labored breathing."},
+  {cat:"Respiratory Mechanics", q:"What happens to the diaphragm during quiet expiration?",
+   opts:["It contracts forcefully downward","It relaxes and rises back to its dome shape","It filters incoming air","It conducts air to the alveoli"], ans:1,
+   exp:"Quiet expiration is entirely passive — no muscles fire. The diaphragm simply relaxes, elastic recoil returns it to its dome shape, thoracic volume decreases, pressure rises above atmospheric, and air flows out."},
+  {cat:"Respiratory Mechanics", q:"Which muscles are activated during forced (active) expiration?",
+   opts:["Diaphragm and scalenes","External intercostals and SCM","Internal intercostals and abdominal muscles","Pectoralis minor and trapezius"], ans:2,
+   exp:"Forced expiration (coughing, exercise, singing) requires the internal intercostals (depress ribs inward) and abdominal muscles (compress abdomen, push diaphragm up). Neither of these fires during normal quiet breathing."},
+  {cat:"Respiratory Mechanics", q:"Which nerve innervates the diaphragm, and what spinal levels does it originate from?",
+   opts:["Vagus nerve (CN X) — cranial","Intercostal nerve — T1–T11","Phrenic nerve — C3, C4, C5","Subcostal nerve — T12"], ans:2,
+   exp:"Phrenic nerve, C3–C5. Mnemonic: 'C3, 4, 5 keeps the diaphragm alive.' A spinal cord injury at or above C3 eliminates diaphragm function completely — immediate respiratory arrest and permanent ventilator dependence."},
+  {cat:"Respiratory Mechanics", q:"Quiet expiration is best characterized as:",
+   opts:["Active — driven by internal intercostal contraction","Passive — driven by elastic recoil, no muscle activity","Active — driven by abdominal wall compression","Passive — triggered by surfactant secretion"], ans:1,
+   exp:"Quiet expiration requires no muscular effort — elastic recoil of the lung and chest wall passively returns the thorax to its resting state. This is a key exam distinction: only inspiration is active at rest."},
+
+  // --- GAS LAWS & EXCHANGE ---
+  {cat:"Gas Laws & Exchange", q:"Dalton's Law explains alveolar gas exchange because it states that:",
+   opts:["Gases dissolve in proportion to their partial pressure","Each gas in a mixture exerts its own independent partial pressure","Gas volume varies inversely with pressure","Warmer gas molecules diffuse faster"], ans:1,
+   exp:"Dalton's Law: total pressure = sum of partial pressures of each gas. O₂ = ~21% of air × 760 mmHg = ~159 mmHg PO₂ at sea level. Each gas behaves independently, which is why O₂ and CO₂ can exchange simultaneously in opposite directions."},
+  {cat:"Gas Laws & Exchange", q:"Henry's Law explains why O₂ moves from the alveoli into the blood because:",
+   opts:["Boyle's Law drives passive recoil","Gas volume changes with temperature","Gases dissolve into liquid in proportion to their partial pressure","Lighter gas molecules diffuse faster"], ans:2,
+   exp:"Henry's Law: gas dissolves in liquid proportional to its partial pressure. PO₂ in alveoli (~104 mmHg) > PO₂ in venous blood (~40 mmHg) → O₂ dissolves into blood. CO₂ moves the reverse: PCO₂ blood (45) > alveoli (40)."},
+  {cat:"Gas Laws & Exchange", q:"Which factor most directly determines the rate of gas diffusion across the respiratory membrane?",
+   opts:["Pulmonary capillary blood pressure","Partial pressure gradient across the membrane","Lung compliance","Airway resistance"], ans:1,
+   exp:"The partial pressure gradient is the primary driver of diffusion rate (Fick's Law). Other factors matter too (surface area, membrane thickness, solubility), but gradient is the most direct. Altitude reduces PO₂ gradient → less O₂ loading."},
+  {cat:"Gas Laws & Exchange", q:"Which term specifically describes the exchange of gases between the blood and body tissues?",
+   opts:["External respiration","Pulmonary ventilation","Internal respiration","Alveolar ventilation"], ans:2,
+   exp:"Internal respiration = gas exchange between systemic capillaries and body tissues (O₂ off, CO₂ on). External respiration = gas exchange at the alveoli (O₂ on, CO₂ off). Pulmonary ventilation = the mechanical act of breathing (moving air)."},
+  {cat:"Gas Laws & Exchange", q:"Which alveolar cell type is primarily responsible for gas exchange?",
+   opts:["Type II alveolar cells (secrete surfactant)","Alveolar macrophages (dust cells)","Type I alveolar cells (thin squamous epithelium)","Endothelial cells of capillaries"], ans:2,
+   exp:"Type I alveolar cells are extremely thin, flat squamous cells that cover ~95% of the alveolar surface — their thinness (0.5 µm) is what makes rapid gas diffusion possible. Type II cells produce surfactant but don't directly participate in gas exchange."},
+
+  // --- LUNG VOLUMES & CALCULATIONS ---
+  {cat:"Lung Volumes & Calculations", q:"Which volume represents the amount of air moved in or out during normal quiet breathing?",
+   opts:["Vital capacity","Inspiratory reserve volume","Tidal volume","Total lung capacity"], ans:2,
+   exp:"Tidal volume (TV) = ~500 mL — the air moved per normal quiet breath at rest. It sits in the middle of the spirogram with reserve volumes both above and below it."},
+  {cat:"Lung Volumes & Calculations", q:"Which capacity describes the volume of air remaining in the lungs after a normal passive exhalation?",
+   opts:["Tidal volume","Vital capacity","Functional residual capacity (FRC)","Expiratory reserve volume"], ans:2,
+   exp:"FRC = ERV + RV = ~2,400 mL. It is the air left after a normal (not forced) exhalation. FRC maintains alveolar gas exchange between breaths. FRC increases in obstructive disease (air trapping) and decreases in restrictive disease."},
+  {cat:"Lung Volumes & Calculations", q:"Which volume represents the additional air that can be forcibly exhaled after a normal exhalation?",
+   opts:["Tidal volume","Inspiratory reserve volume","Vital capacity","Expiratory reserve volume (ERV)"], ans:3,
+   exp:"ERV = ~1,200 mL — the extra air you can push out after a normal breath, by really squeezing. It reflects the elasticity of the lungs and chest wall. Reduced in obesity and conditions limiting chest wall expansion."},
+  {cat:"Lung Volumes & Calculations", q:"A patient has TV = 450 mL and respiratory rate = 16 breaths/min. What is their minute ventilation (MRV)?",
+   opts:["5,400 mL/min","6,200 mL/min","7,200 mL/min","8,000 mL/min"], ans:2,
+   exp:"MRV = TV × RR = 450 × 16 = 7,200 mL/min. This is total air inhaled per minute including dead space. Compare to AVR = (TV − dead space) × RR, which is always less than MRV."},
+  {cat:"Lung Volumes & Calculations", q:"Using the same patient (TV=450 mL, RR=16 bpm, dead space=150 mL), what is the alveolar ventilation rate?",
+   opts:["4,800 mL/min","7,200 mL/min","2,400 mL/min","6,000 mL/min"], ans:0,
+   exp:"AVR = (TV − Dead Space) × RR = (450 − 150) × 16 = 300 × 16 = 4,800 mL/min. This is the air that actually reaches the alveoli for gas exchange — always less than MRV because dead space air never exchanges gases."},
+
+  // --- O₂ & CO₂ TRANSPORT ---
+  {cat:"Gas Transport", q:"The majority of oxygen in the blood is transported by:",
+   opts:["Dissolved in plasma (~1.5%)","Bound to leukocytes","Bound to hemoglobin in RBCs (~98.5%)","Bound to platelets"], ans:2,
+   exp:"~98.5% of O₂ is carried bound to hemoglobin (oxyhemoglobin). Only ~1.5% dissolves freely in plasma. Each hemoglobin molecule carries up to 4 O₂ molecules (one per heme group). When fully loaded: 100% saturation."},
+  {cat:"Gas Transport", q:"What primarily stimulates central chemoreceptors in the medulla to increase ventilation?",
+   opts:["Increased blood O₂","Decreased blood O₂","Increased blood CO₂ concentration (↓ CSF pH)","Decreased surfactant production"], ans:2,
+   exp:"Central chemoreceptors detect pH drops in CSF caused by elevated CO₂ (CO₂ crosses the blood-brain barrier → forms carbonic acid → H⁺). CO₂ — not O₂ — is the primary driver of breathing in healthy people."},
+  {cat:"Gas Transport", q:"The Bohr Effect describes how active tissues receive more O₂. This occurs because:",
+   opts:["Decreased CO₂ increases Hb affinity for O₂","Increased CO₂ and lower pH shift the dissociation curve right, releasing O₂","Higher pH at tissues causes Hb to release O₂","BPG decreases in metabolically active tissue"], ans:1,
+   exp:"Active tissues produce CO₂ and H⁺ (lowering pH). Both right-shift the oxyhemoglobin dissociation curve — Hb releases O₂ more readily. The harder a tissue works, the more CO₂ it generates, the more O₂ hemoglobin delivers. Elegant feedback."},
+  {cat:"Gas Transport", q:"Approximately 90% of CO₂ is transported in the blood as:",
+   opts:["Carbaminohemoglobin bound to globin","Dissolved CO₂ gas in plasma","Bicarbonate ions (HCO₃⁻) in plasma via the chloride shift","Carbonic acid retained within RBCs"], ans:2,
+   exp:"CO₂ → enters RBC → reacts with H₂O (carbonic anhydrase) → H₂CO₃ → H⁺ + HCO₃⁻. Bicarbonate exits RBC into plasma (Cl⁻ enters — chloride shift). ~90% via this route. ~5% as carbaminoHb; ~5% dissolved in plasma."},
+
+  // --- PLEURA & STRUCTURE-FUNCTION ---
+  {cat:"Pleura & Structure", q:"Which statement about the pleural membranes is correct?",
+   opts:["The visceral pleura lines the inner thoracic wall","The pleural cavity contains air under positive pressure","The visceral pleura covers the lung surface directly","The parietal pleura wraps directly around each lung"], ans:2,
+   exp:"Visceral pleura = covers the lung surface. Parietal pleura = lines the thoracic wall. The pleural cavity between them contains a thin film of serous fluid (not air) that reduces friction and creates surface tension holding the lungs against the chest wall."},
+  {cat:"Pleura & Structure", q:"Which structure controls the movement of air into and out of the lungs by contracting and relaxing?",
+   opts:["Bronchi","Pleural membrane","Larynx","Diaphragm"], ans:3,
+   exp:"The diaphragm is the primary pump of ventilation. When it contracts, it flattens downward → increases thoracic volume → decreases intrapulmonary pressure → air flows in. When it relaxes, elastic recoil reverses this → air flows out."},
+
+  // --- RESPIRATORY DISORDERS ---
+  {cat:"Respiratory Disorders", q:"In obstructive lung disease, which finding is most characteristic on spirometry?",
+   opts:["TLC and VC both decrease proportionally","RV and FRC increase from air trapping; FEV₁/FVC ratio decreases","All lung volumes decrease equally","Residual volume decreases below normal"], ans:1,
+   exp:"Obstructive disease (COPD, asthma) traps air — narrowed airways prevent complete exhalation. RV and FRC rise (trapped air), FEV₁ drops disproportionately, and FEV₁/FVC ratio falls below 70%. The spirogram floor rises."},
+  {cat:"Respiratory Disorders", q:"How does restrictive lung disease differ from obstructive on spirometry?",
+   opts:["Air trapping causes RV to increase above normal","Reduced lung compliance decreases all volumes proportionally","FRC and barrel chest are the hallmark findings","Spirometry is normal; only diffusion capacity is reduced"], ans:1,
+   exp:"Restrictive disease (fibrosis, obesity, pleural effusion) stiffens the lungs or restricts chest expansion — all volumes shrink proportionally. No air trapping. The whole spirogram compresses down. TLC, VC, FRC, RV all decrease. FEV₁/FVC ratio is normal or even elevated."},
+];
+
+let current = 0, score = 0, answered = false, shuffled = [];
+const cats = {};
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function init() {
+  shuffled = shuffle([...questions]);
+  current = 0; score = 0;
+  Object.keys(cats).forEach(k => delete cats[k]);
+  document.getElementById('quizScreen').style.display = '';
+  document.getElementById('resultsScreen').style.display = 'none';
+  loadQuestion();
+}
+
+function loadQuestion() {
+  answered = false;
+  const q = shuffled[current];
+  document.getElementById('questionCounter').textContent = `Question ${current + 1} of ${shuffled.length}`;
+  document.getElementById('scoreBadge').textContent = `Score: ${score}`;
+  document.getElementById('progressBar').style.width = `${(current / shuffled.length) * 100}%`;
+  document.getElementById('categoryTag').textContent = q.cat;
+  document.getElementById('questionText').innerHTML = q.q;
+
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  ['A','B','C','D'].forEach((letter, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="letter">${letter}</span><span>${q.opts[i]}</span>`;
+    btn.onclick = () => selectAnswer(i, q.ans, q.exp, q.cat);
+    container.appendChild(btn);
+  });
+
+  document.getElementById('feedbackBox').style.display = 'none';
+  document.getElementById('feedbackBox').className = 'feedback';
+  document.getElementById('btnNext').style.display = 'none';
+}
+
+function selectAnswer(chosen, correct, explanation, cat) {
+  if (answered) return;
+  answered = true;
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+  if (!cats[cat]) cats[cat] = {right: 0, total: 0};
+  cats[cat].total++;
+
+  const fb = document.getElementById('feedbackBox');
+  fb.style.display = 'block';
+
+  if (chosen === correct) {
+    score++;
+    cats[cat].right++;
+    btns[chosen].classList.add('correct');
+    fb.className = 'feedback correct';
+    document.getElementById('feedbackLabel').textContent = '✓ Correct!';
+  } else {
+    btns[chosen].classList.add('wrong');
+    btns[correct].classList.add('revealed');
+    fb.className = 'feedback wrong';
+    document.getElementById('feedbackLabel').textContent = `✗ Incorrect — correct answer: ${['A','B','C','D'][correct]}`;
+  }
+  document.getElementById('feedbackText').innerHTML = explanation;
+  document.getElementById('scoreBadge').textContent = `Score: ${score}`;
+  document.getElementById('btnNext').style.display = 'block';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= shuffled.length) showResults();
+  else loadQuestion();
+}
+
+function showResults() {
+  document.getElementById('progressBar').style.width = '100%';
+  document.getElementById('quizScreen').style.display = 'none';
+  const rs = document.getElementById('resultsScreen');
+  rs.style.display = 'block';
+  const pct = Math.round((score / shuffled.length) * 100);
+  document.getElementById('finalScore').textContent = `${score}/${shuffled.length}`;
+  let grade, heading, sub;
+  if (pct >= 90) { grade='A'; heading='Outstanding!'; sub='Excellent command of respiratory physiology — you are ready for Exam 3.'; }
+  else if (pct >= 80) { grade='B'; heading='Great work!'; sub='Review the topics you missed — you are close to exam-ready.'; }
+  else if (pct >= 70) { grade='C'; heading='Good effort.'; sub='Go back through the feedback explanations for missed questions before the exam.'; }
+  else { grade='D/F'; heading='Keep studying!'; sub='Revisit the lecture slides and retry — focus on the categories where you scored lowest.'; }
+  document.getElementById('gradeBadge').textContent = `${pct}% — ${grade}`;
+  document.getElementById('resultsHeading').textContent = heading;
+  document.getElementById('resultsSubtext').textContent = sub;
+
+  let html = '<h3>Performance by Topic</h3>';
+  Object.entries(cats).forEach(([cat, data]) => {
+    const p = Math.round((data.right / data.total) * 100);
+    const color = p >= 80 ? '#2E7D32' : p >= 60 ? '#E65100' : '#C62828';
+    html += `<div class="cat-row"><span>${cat}</span><span style="font-weight:600;color:${color}">${data.right}/${data.total} (${p}%)</span></div>`;
+  });
+  document.getElementById('breakdownBox').innerHTML = html;
+}
+
+function restartQuiz() { init(); }
+init();
+</script>
+</body>
+</html>
