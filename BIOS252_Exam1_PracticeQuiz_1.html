@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIOS 252 — Exam 1 Practice Quiz</title>
+<style>
+  :root {
+    --navy: #1A2B4A;
+    --teal: #0E7C7B;
+    --gold: #B8922A;
+    --ltbg: #F4F7FA;
+    --dark: #1E2A3A;
+    --white: #ffffff;
+    --green: #1A6B3A;
+    --red: #C0392B;
+    --ltgold: #FEF9E7;
+    --ltteal: #EBF5FB;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+    background: var(--ltbg);
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  /* ─── HEADER ─────────────────────────────────────────────────────────────── */
+  header {
+    background: var(--navy);
+    color: var(--white);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .header-gold {
+    background: var(--gold);
+    height: 6px;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .header-left h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .header-left p {
+    font-size: 0.82rem;
+    color: #9BB5C8;
+    margin-top: 2px;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .score-badge {
+    background: var(--teal);
+    color: var(--white);
+    border-radius: 20px;
+    padding: 6px 18px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: #9BB5C8;
+    white-space: nowrap;
+  }
+  .progress-bar-outer {
+    width: 120px;
+    height: 8px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  /* ─── CATEGORY TABS ─────────────────────────────────────────────────────── */
+  .tab-bar {
+    background: #122038;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    padding: 0 20px;
+    scrollbar-width: none;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    background: transparent;
+    color: #9BB5C8;
+    border: none;
+    padding: 11px 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .tab-btn.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+  .tab-btn:hover:not(.active) {
+    color: var(--white);
+  }
+
+  /* ─── MAIN LAYOUT ───────────────────────────────────────────────────────── */
+  .main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
+
+  /* ─── QUESTION CARD ─────────────────────────────────────────────────────── */
+  .question-card {
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin-bottom: 22px;
+    overflow: hidden;
+    display: none;
+    animation: fadeIn 0.25s ease;
+  }
+  .question-card.visible { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .card-top {
+    background: var(--navy);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .q-num {
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+  .q-cat {
+    color: #9BB5C8;
+    font-size: 0.78rem;
+    font-style: italic;
+  }
+
+  .card-body { padding: 20px; }
+  .q-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--navy);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  /* ─── ANSWER OPTIONS ────────────────────────────────────────────────────── */
+  .answers { display: grid; gap: 10px; }
+  .answer-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 2px solid #D0DDE8;
+    border-radius: 8px;
+    background: var(--ltbg);
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--dark);
+    transition: all 0.18s;
+    width: 100%;
+    line-height: 1.45;
+  }
+  .answer-btn:hover:not(:disabled) {
+    border-color: var(--teal);
+    background: var(--ltteal);
+  }
+  .answer-letter {
+    background: var(--navy);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.82rem;
+    border-radius: 4px;
+    min-width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .answer-btn.correct {
+    background: #E8F5E9;
+    border-color: var(--green);
+  }
+  .answer-btn.correct .answer-letter { background: var(--green); }
+  .answer-btn.wrong {
+    background: #FDECEA;
+    border-color: var(--red);
+  }
+  .answer-btn.wrong .answer-letter { background: var(--red); }
+  .answer-btn.reveal-correct {
+    background: #E8F5E9;
+    border-color: var(--green);
+    opacity: 0.8;
+  }
+  .answer-btn.reveal-correct .answer-letter { background: var(--green); }
+  .answer-btn:disabled { cursor: default; }
+
+  /* ─── FEEDBACK ──────────────────────────────────────────────────────────── */
+  .feedback {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    display: none;
+  }
+  .feedback.correct-fb {
+    background: #E8F5E9;
+    border-left: 4px solid var(--green);
+    color: #1A4B2A;
+    display: block;
+  }
+  .feedback.wrong-fb {
+    background: #FDECEA;
+    border-left: 4px solid var(--red);
+    color: #6B1A14;
+    display: block;
+  }
+  .feedback strong { display: block; margin-bottom: 4px; }
+
+  /* ─── RESULTS PANEL ─────────────────────────────────────────────────────── */
+  #results-panel {
+    display: none;
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    padding: 36px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  #results-panel h2 { font-size: 1.8rem; color: var(--navy); margin-bottom: 8px; }
+  #results-panel .score-big {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--teal);
+    margin: 12px 0;
+  }
+  #results-panel p { color: #666; font-size: 1rem; margin-bottom: 20px; }
+  .category-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .cat-score {
+    background: var(--ltbg);
+    border-radius: 8px;
+    padding: 14px;
+    border-top: 4px solid var(--teal);
+  }
+  .cat-score h4 { font-size: 0.85rem; color: var(--navy); margin-bottom: 6px; }
+  .cat-score .num { font-size: 1.5rem; font-weight: 700; color: var(--teal); }
+
+  /* ─── CONTROLS ──────────────────────────────────────────────────────────── */
+  .controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .controls-left { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    padding: 9px 22px;
+    border: none;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--navy); color: var(--white); }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-teal { background: var(--teal); color: var(--white); }
+  .btn-teal:hover { opacity: 0.88; }
+  .btn-gold { background: var(--gold); color: var(--white); }
+  .btn-gold:hover { opacity: 0.88; }
+  .btn-outline { background: transparent; color: var(--navy); border: 2px solid var(--navy); }
+  .btn-outline:hover { background: var(--navy); color: var(--white); }
+
+  .info-bar {
+    background: var(--ltteal);
+    border-left: 4px solid var(--teal);
+    padding: 10px 16px;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.85rem;
+    color: var(--dark);
+    margin-bottom: 20px;
+  }
+  .info-bar strong { color: var(--teal); }
+
+  /* ─── EMPTY STATE ───────────────────────────────────────────────────────── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+    display: none;
+  }
+  .empty-state.visible { display: block; }
+  .empty-state .emoji { font-size: 3rem; margin-bottom: 12px; }
+
+  /* ─── RESPONSIVE ────────────────────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    .header-inner { padding: 12px 16px; }
+    .main { padding: 16px 12px 50px; }
+    .score-big { font-size: 2.5rem; }
+    .controls { justify-content: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-gold"></div>
+  <div class="header-inner">
+    <div class="header-left">
+      <h1>BIOS 252 — Exam 1 Practice Quiz</h1>
+      <p>Laura A. Bates, DC &nbsp;|&nbsp; Anatomy & Physiology II</p>
+    </div>
+    <div class="header-right">
+      <div class="progress-wrap">
+        <span id="progress-text">0 / 33</span>
+        <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-bar" style="width:0%"></div></div>
+      </div>
+      <div class="score-badge" id="score-badge">Score: 0 / 0</div>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="filterCat('all')">All Questions (33)</button>
+    <button class="tab-btn" onclick="filterCat('muscular')">Muscular System (15)</button>
+    <button class="tab-btn" onclick="filterCat('nsorg')">NS Organization (9)</button>
+    <button class="tab-btn" onclick="filterCat('nssig')">NS Signaling (9)</button>
+    <button class="tab-btn" onclick="filterCat('wrong')">Incorrect Only</button>
+  </div>
+</header>
+
+<div class="main">
+  <div class="controls">
+    <div class="controls-left">
+      <button class="btn btn-primary" onclick="resetAll()">🔄 Reset All</button>
+      <button class="btn btn-teal" onclick="shuffleAll()">🔀 Shuffle</button>
+      <button class="btn btn-gold" onclick="showResults()">📊 View Results</button>
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <strong>How to use:</strong> Click an answer to check it. Green = correct, Red = incorrect. The right answer is always revealed. Use the tabs above to filter by topic or review only your incorrect answers.
+  </div>
+
+  <div id="results-panel">
+    <h2>Your Results</h2>
+    <div class="score-big" id="result-score">—</div>
+    <p id="result-msg">Complete questions to see your score breakdown.</p>
+    <div class="category-breakdown" id="cat-breakdown"></div>
+    <button class="btn btn-primary" onclick="resetAll()">🔄 Reset & Try Again</button>
+  </div>
+
+  <div id="empty-state" class="empty-state">
+    <div class="emoji">🎉</div>
+    <p>No incorrect answers in this category!</p>
+  </div>
+
+  <div id="questions-container"></div>
+</div>
+
+<script>
+const QUESTIONS = [
+  // ── MUSCULAR SYSTEM ──────────────────────────────────────────────────────
+  { id:1, cat:"muscular", catLabel:"Muscular System",
+    q:"Which characteristic is shared by BOTH cardiac and smooth muscle?",
+    options:["Intercalated discs",
+    "Multinucleated fibers",
+    "Involuntary control",
+    "Striations"],
+    correct:2,
+    feedback:"Both cardiac and smooth muscle are INVOLUNTARY — you cannot consciously control them. Striations are shared by cardiac and SKELETAL (not smooth). Intercalated discs and branched shape are unique to cardiac." },
+
+  { id:2, cat:"muscular", catLabel:"Muscular System",
+    q:"Which property of muscle describes the ability to RETURN to its original resting length after being stretched?",
+    options:["Extensibility",
+    "Contractility",
+    "Electrical excitability",
+    "Elasticity"],
+    correct:3,
+    feedback:"Elasticity = ability to RECOIL to original length — like a rubber band snapping back. Extensibility = ability to be STRETCHED without damage. Don't mix them up — they're direct opposites on the exam." },
+
+  { id:3, cat:"muscular", catLabel:"Muscular System",
+    q:"Which connective tissue layer wraps around the ENTIRE skeletal muscle?",
+    options:["Perimysium",
+    "Epimysium",
+    "Fascia",
+    "Endomysium"],
+    correct:1,
+    feedback:"Outside-in: Epimysium (entire muscle) → Perimysium (fascicle bundles) → Endomysium (individual fibers). Fascia separates muscle groups/compartments. Epi = upon the whole muscle." },
+
+  { id:4, cat:"muscular", catLabel:"Muscular System",
+    q:"A muscle that stabilizes the ORIGIN BONE so the prime mover can work effectively is called a:",
+    options:["Prime mover",
+    "Antagonist",
+    "Fixator",
+    "Synergist"],
+    correct:2,
+    feedback:"The fixator stabilizes the ORIGIN — the anchor point — so the prime mover can pull the insertion without dragging the wrong bone. A synergist assists the prime mover but doesn't necessarily stabilize the origin." },
+
+  { id:5, cat:"muscular", catLabel:"Muscular System",
+    q:"The plasma membrane of a muscle fiber (cell) is called the:",
+    options:["Sarcomere",
+    "Sarcolemma",
+    "Sarcoplasmic reticulum",
+    "Myofibril"],
+    correct:1,
+    feedback:"Sarcolemma = plasma membrane of the muscle cell. It forms T-tubules that carry action potentials deep into the fiber. Sarcoplasmic reticulum = modified ER that stores calcium. Sarcomere = functional unit of contraction." },
+
+  { id:6, cat:"muscular", catLabel:"Muscular System",
+    q:"What molecule breaks the myosin-actin cross-bridge during muscle RELAXATION?",
+    options:["Acetylcholine",
+    "Troponin",
+    "ATP",
+    "Calcium"],
+    correct:2,
+    feedback:"ATP breaks the cross-bridge — it binds myosin and allows it to release actin. Calcium's removal causes tropomyosin to re-cover the active sites (so new cross-bridges can't form), but ATP is what breaks existing ones." },
+
+  { id:7, cat:"muscular", catLabel:"Muscular System",
+    q:"Which ATP source provides several minutes to HOURS of energy for sustained muscle contraction?",
+    options:["Creatine phosphate",
+    "Beta oxidation alone",
+    "Anaerobic glycolysis",
+    "Aerobic respiration"],
+    correct:3,
+    feedback:"Aerobic respiration (Krebs cycle + oxidative phosphorylation) = hours of sustained energy. Creatine phosphate = ~10 seconds. Anaerobic glycolysis = ~30 sec to 2 min. Beta oxidation feeds into aerobic respiration." },
+
+  { id:8, cat:"muscular", catLabel:"Muscular System",
+    q:"A muscle contraction in which there is NO CHANGE in muscle length is called:",
+    options:["Aerobic contraction",
+    "Isometric",
+    "Eccentric isotonic",
+    "Concentric isotonic"],
+    correct:1,
+    feedback:"Isometric: iso = same, metric = length. No length change — the muscle generates force but doesn't shorten or lengthen. Example: pushing against a wall. Concentric = shortening. Eccentric = lengthening under load." },
+
+  { id:9, cat:"muscular", catLabel:"Muscular System",
+    q:"At the neuromuscular junction, what allows calcium to enter the presynaptic neuron when an action potential arrives?",
+    options:["SNARE proteins",
+    "Troponin",
+    "Voltage-gated calcium channels",
+    "ACh receptors on sarcolemma"],
+    correct:2,
+    feedback:"Voltage-gated calcium channels open when the AP arrives at the motor neuron terminal. Ca²⁺ floods in and triggers SNARE proteins to fuse vesicles with the membrane, releasing ACh. Troponin is in the muscle, not the neuron." },
+
+  { id:10, cat:"muscular", catLabel:"Muscular System",
+    q:"Which characteristic belongs SPECIFICALLY to cardiac muscle — not smooth or skeletal?",
+    options:["Multinucleated",
+    "Voluntary control",
+    "Non-striated",
+    "Branched shape"],
+    correct:3,
+    feedback:"Cardiac muscle cells are uniquely branched and connected by intercalated discs. Skeletal is multinucleated; smooth is non-striated; both cardiac and smooth are involuntary (not voluntary)." },
+
+  { id:11, cat:"muscular", catLabel:"Muscular System",
+    q:"The connective tissue that separates GROUPS of muscles into compartments is called the:",
+    options:["Tendon",
+    "Fascia",
+    "Epimysium",
+    "Perimysium"],
+    correct:1,
+    feedback:"Fascia surrounds and separates muscle groups into compartments. Compartment syndrome occurs when swelling within a fascial compartment increases pressure enough to compress vessels and nerves." },
+
+  { id:12, cat:"muscular", catLabel:"Muscular System",
+    q:"Which muscle group EXTENDS the leg at the knee joint?",
+    options:["Adductors",
+    "Hamstrings",
+    "Gastrocnemius",
+    "Quadriceps"],
+    correct:3,
+    feedback:"Quadriceps (rectus femoris, vastus lateralis, medialis, intermedius) extend the knee. Hamstrings FLEX the knee and extend the hip. Gastrocnemius crosses the knee but its primary action is plantar flexion." },
+
+  { id:13, cat:"muscular", catLabel:"Muscular System",
+    q:"Which facial muscle purses the lips — sometimes called the 'kissing muscle'?",
+    options:["Frontalis",
+    "Buccinator",
+    "Orbicularis oris",
+    "Orbicularis oculi"],
+    correct:2,
+    feedback:"Orbicularis oris surrounds the MOUTH (oris = mouth) — it purses and closes the lips. Orbicularis oculi surrounds the EYE (oculi = eye). Buccinator compresses the cheek. Frontalis raises the eyebrows." },
+
+  { id:14, cat:"muscular", catLabel:"Muscular System",
+    q:"The rotator cuff muscles are best remembered using which mnemonic?",
+    options:["SAID — Supraspinatus, Adductors, Infraspinatus, Deltoid",
+    "TIPS — Teres, Infraspinatus, Pectoralis, Supraspinatus",
+    "SITS — Supraspinatus, Infraspinatus, Teres minor, Subscapularis",
+    "SLIM — Subscapularis, Latissimus, Infraspinatus, Medius"],
+    correct:2,
+    feedback:"SITS: Supraspinatus (initiates abduction, most torn), Infraspinatus (external rotation), Teres minor (external rotation), Subscapularis (internal rotation). These 4 stabilize the glenohumeral joint." },
+
+  { id:15, cat:"muscular", catLabel:"Muscular System",
+    q:"Which is the largest muscle in the body and the primary hip EXTENSOR?",
+    options:["Gluteus medius",
+    "Biceps femoris",
+    "Piriformis",
+    "Gluteus maximus"],
+    correct:3,
+    feedback:"Gluteus maximus is the largest, most powerful muscle in the body. It primarily extends and laterally rotates the hip — active when climbing stairs, rising from a chair, or running. Gluteus medius ABDUCTS the hip and stabilizes the pelvis." },
+
+  // ── NS ORGANIZATION ───────────────────────────────────────────────────────
+  { id:16, cat:"nsorg", catLabel:"NS Organization",
+    q:"The 12 pairs of cranial nerves and 31 pairs of spinal nerves comprise the ___ nervous system.",
+    options:["Peripheral",
+    "Central",
+    "Autonomic",
+    "Somatic"],
+    correct:0,
+    feedback:"The PERIPHERAL nervous system (PNS) includes all nervous tissue OUTSIDE the brain and spinal cord — including the 12 cranial nerve pairs and 31 spinal nerve pairs. The CNS is brain + spinal cord only." },
+
+  { id:17, cat:"nsorg", catLabel:"NS Organization",
+    q:"Which functional division of the nervous system carries signals to glands, smooth muscle, and cardiac muscle?",
+    options:["Visceral motor (autonomic)",
+    "Afferent division",
+    "Somatic motor",
+    "Somatic sensory"],
+    correct:0,
+    feedback:"Visceral motor = the autonomic nervous system. It controls involuntary targets: glands, smooth muscle, and cardiac muscle. Somatic motor controls SKELETAL muscle (voluntary). Afferent = sensory, incoming." },
+
+  { id:18, cat:"nsorg", catLabel:"NS Organization",
+    q:"The PRIMARY function of the PARASYMPATHETIC nervous system is to:",
+    options:["Control voluntary skeletal muscle",
+    "Slow most body systems EXCEPT digestion",
+    "Prepare the body for emergencies",
+    "Increase heart rate and blood pressure"],
+    correct:1,
+    feedback:"Parasympathetic = rest and digest. It SLOWS most body systems (heart rate, BP, breathing) while ACTIVATING digestion. Sympathetic is fight-or-flight (emergencies, increased HR, BP, blood glucose). Voluntary muscle = somatic." },
+
+  { id:19, cat:"nsorg", catLabel:"NS Organization",
+    q:"Which glial cell is responsible for the BLOOD-BRAIN BARRIER?",
+    options:["Ependymal cells",
+    "Astrocytes",
+    "Microglia",
+    "Oligodendrocytes"],
+    correct:1,
+    feedback:"Astrocytes (star-shaped) form the blood-brain barrier with their end-feet pressed against brain capillaries. Oligodendrocytes myelinate CNS axons. Microglia are the CNS immune cells. Ependymal cells produce CSF." },
+
+  { id:20, cat:"nsorg", catLabel:"NS Organization",
+    q:"Which glial cell myelinates axons in the PERIPHERAL nervous system?",
+    options:["Satellite cells",
+    "Oligodendrocytes",
+    "Astrocytes",
+    "Schwann cells"],
+    correct:3,
+    feedback:"Schwann cells myelinate PNS axons (one segment per cell) and form guiding tubes for nerve regeneration after injury. Oligodendrocytes myelinate CNS axons (and can wrap multiple axons at once). Satellite cells support PNS neuron cell bodies." },
+
+  { id:21, cat:"nsorg", catLabel:"NS Organization",
+    q:"Which meningeal layer is the MIDDLE layer that contains CSF and blood vessels?",
+    options:["Arachnoid mater",
+    "Pia mater",
+    "Dura mater",
+    "Epidural layer"],
+    correct:0,
+    feedback:"Arachnoid mater is the middle layer — the subarachnoid space beneath it contains CSF and blood vessels. Dura mater = tough outer layer. Pia mater = inner layer adhering to the brain surface. There is no 'epidural layer' (epidural space is between vertebrae and dura)." },
+
+  { id:22, cat:"nsorg", catLabel:"NS Organization",
+    q:"Which dural fold separates the CEREBELLAR hemispheres?",
+    options:["Falx cerebri",
+    "Falx cerebelli",
+    "Arachnoid mater",
+    "Tentorium cerebelli"],
+    correct:1,
+    feedback:"Falx cerebelli separates the two cerebellar hemispheres. Falx cerebri separates the two cerebral (brain) hemispheres. Tentorium cerebelli separates the cerebrum from the cerebellum (like a tent over the cerebellum)." },
+
+  { id:23, cat:"nsorg", catLabel:"NS Organization",
+    q:"Which functional class of neurons relays messages BETWEEN neurons within the CNS?",
+    options:["Efferent neurons",
+    "Motor neurons",
+    "Sensory neurons",
+    "Interneurons"],
+    correct:3,
+    feedback:"Interneurons (also called association neurons) are located entirely within the CNS and relay messages between sensory and motor neurons. They make up ~99% of all neurons in the body and enable integration and complex responses." },
+
+  { id:24, cat:"nsorg", catLabel:"NS Organization",
+    q:"Which STRUCTURAL neuron type is most common in the human body?",
+    options:["Unipolar",
+    "Multipolar",
+    "Anaxonic",
+    "Bipolar"],
+    correct:1,
+    feedback:"Multipolar neurons (many dendrites, one axon) are most common — they include most motor neurons and interneurons. Bipolar are found in special senses (retina, cochlea). Unipolar are PNS sensory neurons from skin. Anaxonic are rare." },
+
+  // ── NS SIGNALING ──────────────────────────────────────────────────────────
+  { id:25, cat:"nssig", catLabel:"NS Signaling",
+    q:"Which type of ion channel responds to DIRECT changes in membrane potential?",
+    options:["Mechanically-gated",
+    "Voltage-gated",
+    "Ligand-gated",
+    "Leak channels"],
+    correct:1,
+    feedback:"Voltage-gated channels open/close in response to changes in membrane voltage — they are critical for action potential generation. Ligand-gated open when a neurotransmitter binds. Mechanically-gated open with physical force." },
+
+  { id:26, cat:"nssig", catLabel:"NS Signaling",
+    q:"The electrical charge difference across a neuron's membrane when it is NOT being stimulated is called the:",
+    options:["Integration potential",
+    "Action potential",
+    "Graded potential",
+    "Resting membrane potential"],
+    correct:3,
+    feedback:"The resting membrane potential (RMP) = −70 mV. It's the baseline charge difference when the neuron is at rest and not generating a signal. An action potential is the rapid depolarization/repolarization event; graded potentials are small, local changes." },
+
+  { id:27, cat:"nssig", catLabel:"NS Signaling",
+    q:"When Na⁺ passes through the axon membrane and the INSIDE becomes more positive, this process is called:",
+    options:["Depolarization",
+    "Repolarization",
+    "Filtration",
+    "Hyperpolarization"],
+    correct:0,
+    feedback:"Depolarization = inside becomes MORE POSITIVE as Na⁺ rushes in. Repolarization = inside returns to negative as K⁺ flows out. Hyperpolarization = brief dip BELOW resting potential (more negative than −70 mV)." },
+
+  { id:28, cat:"nssig", catLabel:"NS Signaling",
+    q:"Which neurotransmitter is associated with MOOD regulation and is targeted by antidepressant medications?",
+    options:["Serotonin",
+    "Acetylcholine",
+    "Glutamate",
+    "Histamine"],
+    correct:0,
+    feedback:"Serotonin is the mood neurotransmitter — SSRIs (selective serotonin reuptake inhibitors like Prozac) block its reuptake to increase availability. ACh = learning/NMJ. Glutamate = memory/excitatory. Histamine = alertness." },
+
+  { id:29, cat:"nssig", catLabel:"NS Signaling",
+    q:"Which of the following would INCREASE nerve impulse propagation speed?",
+    options:["Smaller axon diameter",
+    "Absence of myelin sheath",
+    "Lower temperature",
+    "Presence of myelin sheath"],
+    correct:3,
+    feedback:"Myelin enables saltatory conduction (signal jumps from node to node) — 50-100× faster than unmyelinated. Large axon diameter and higher temperature also increase speed. MS destroys myelin and slows or blocks conduction." },
+
+  { id:30, cat:"nssig", catLabel:"NS Signaling",
+    q:"How are neurotransmitters primarily REABSORBED by the presynaptic neuron after release?",
+    options:["Enzymatic degradation",
+    "Reuptake",
+    "Simple diffusion",
+    "Phagocytosis by macrophages"],
+    correct:1,
+    feedback:"Reuptake = the presynaptic neuron recaptures the NT using transporter proteins and recycles it into vesicles. SSRIs work by BLOCKING serotonin reuptake. Enzymatic degradation (e.g., AChE breaking down ACh) is the other primary mechanism." },
+
+  { id:31, cat:"nssig", catLabel:"NS Signaling",
+    q:"The two CONTRACTILE proteins of the sarcomere are:",
+    options:["Myosin and troponin",
+    "Tropomyosin and troponin",
+    "Titin and dystrophin",
+    "Actin and myosin"],
+    correct:3,
+    feedback:"Actin (thin filaments) and myosin (thick filaments) are the contractile proteins — they interact to generate force. Tropomyosin and troponin are REGULATORY proteins that block/expose actin binding sites. Titin is elastic; dystrophin provides structural support." },
+
+  { id:32, cat:"nssig", catLabel:"NS Signaling",
+    q:"At rest, where are Na⁺ and K⁺ ions primarily concentrated?",
+    options:["Na⁺ outside the cell; K⁺ inside the cell",
+    "Na⁺ and K⁺ equal inside and outside",
+    "Na⁺ inside the cell; K⁺ outside the cell",
+    "Na⁺ in the nucleus; K⁺ in the cytoplasm"],
+    correct:0,
+    feedback:"Na⁺ (sodium) = more concentrated OUTSIDE (extracellular). K⁺ (potassium) = more concentrated INSIDE (intracellular). The Na⁺/K⁺ pump maintains this (pumps 3 Na⁺ OUT, 2 K⁺ IN using ATP), creating the −70 mV resting potential." },
+
+  { id:33, cat:"nssig", catLabel:"NS Signaling",
+    q:"Which correctly describes the organization of the nervous system?",
+    options:["Autonomic system + Skeletal system",
+    "Central nervous system + Muscular system",
+    "Central nervous system + Peripheral nervous system",
+    "Somatic system + Endocrine system"],
+    correct:2,
+    feedback:"The nervous system is divided into the CNS (brain + spinal cord) and PNS (everything outside CNS — all nerves, ganglia, sensory receptors). The other options mix up unrelated systems." },
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let answered = {}; // id → { chosen, correct }
+let currentFilter = 'all';
+let questionOrder = QUESTIONS.map(q => q.id);
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  const container = document.getElementById('questions-container');
+  container.innerHTML = '';
+
+  const filtered = getFiltered();
+  const empty = document.getElementById('empty-state');
+
+  if (filtered.length === 0 && currentFilter === 'wrong') {
+    empty.classList.add('visible');
+  } else {
+    empty.classList.remove('visible');
+  }
+
+  const orderedFiltered = questionOrder
+    .map(id => QUESTIONS.find(q => q.id === id))
+    .filter(q => q && filtered.find(fq => fq.id === q.id));
+
+  orderedFiltered.forEach((q, displayIdx) => {
+    const ans = answered[q.id];
+    const card = document.createElement('div');
+    card.className = 'question-card visible';
+    card.id = `card-${q.id}`;
+
+    const letters = ['A','B','C','D'];
+    const answersHTML = q.options.map((opt, i) => {
+      let cls = 'answer-btn';
+      if (ans) {
+        if (i === q.correct) cls += ans.chosen === i ? ' correct' : ' reveal-correct';
+        else if (i === ans.chosen && ans.chosen !== q.correct) cls += ' wrong';
+      }
+      const disabled = ans ? 'disabled' : '';
+      return `<button class="${cls}" ${disabled} onclick="checkAnswer(${q.id}, ${i})">
+        <span class="answer-letter">${letters[i]}</span>
+        <span>${opt}</span>
+      </button>`;
+    }).join('');
+
+    let feedbackHTML = '';
+    if (ans) {
+      const isCorrect = ans.chosen === q.correct;
+      const fbClass = isCorrect ? 'correct-fb' : 'wrong-fb';
+      const icon = isCorrect ? '✅' : '❌';
+      feedbackHTML = `<div class="feedback ${fbClass}">
+        <strong>${icon} ${isCorrect ? 'Correct!' : 'Incorrect'}</strong>
+        ${q.feedback}
+      </div>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="q-num">Q${displayIdx + 1}</span>
+        <span class="q-cat">${q.catLabel}</span>
+      </div>
+      <div class="card-body">
+        <p class="q-text">${q.q}</p>
+        <div class="answers">${answersHTML}</div>
+        ${feedbackHTML}
+      </div>`;
+
+    container.appendChild(card);
+  });
+
+  updateStats();
+}
+
+function getFiltered() {
+  if (currentFilter === 'all') return QUESTIONS;
+  if (currentFilter === 'wrong') return QUESTIONS.filter(q => answered[q.id] && answered[q.id].chosen !== q.correct);
+  return QUESTIONS.filter(q => q.cat === currentFilter);
+}
+
+function checkAnswer(qId, chosen) {
+  if (answered[qId]) return;
+  const q = QUESTIONS.find(q => q.id === qId);
+  answered[qId] = { chosen, correct: chosen === q.correct };
+  render();
+  // Scroll feedback into view
+  setTimeout(() => {
+    const card = document.getElementById(`card-${qId}`);
+    if (card) {
+      const fb = card.querySelector('.feedback');
+      if (fb) fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, 100);
+}
+
+function updateStats() {
+  const total = QUESTIONS.length;
+  const answeredCount = Object.keys(answered).length;
+  const correct = Object.values(answered).filter(a => a.correct).length;
+
+  document.getElementById('progress-text').textContent = `${answeredCount} / ${total}`;
+  document.getElementById('progress-bar').style.width = `${(answeredCount / total) * 100}%`;
+  document.getElementById('score-badge').textContent = `Score: ${correct} / ${answeredCount || 0}`;
+}
+
+function filterCat(cat) {
+  currentFilter = cat;
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => btn.classList.remove('active'));
+  const tabs = ['all','muscular','nsorg','nssig','wrong'];
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  tabBtns[tabs.indexOf(cat)].classList.add('active');
+  document.getElementById('results-panel').style.display = 'none';
+  render();
+}
+
+function resetAll() {
+  answered = {};
+  currentFilter = 'all';
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => { btn.classList.remove('active'); if(i===0) btn.classList.add('active'); });
+  document.getElementById('results-panel').style.display = 'none';
+  render();
+}
+
+function shuffleAll() {
+  questionOrder = [...questionOrder].sort(() => Math.random() - 0.5);
+  render();
+}
+
+function showResults() {
+  const panel = document.getElementById('results-panel');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth' });
+
+  const total = QUESTIONS.length;
+  const answeredCount = Object.keys(answered).length;
+  const correct = Object.values(answered).filter(a => a.correct).length;
+  const pct = answeredCount > 0 ? Math.round((correct / answeredCount) * 100) : 0;
+
+  document.getElementById('result-score').textContent = `${correct} / ${answeredCount} (${pct}%)`;
+  
+  let msg = '';
+  if (answeredCount === 0) msg = "You haven't answered any questions yet. Start practicing!";
+  else if (pct >= 90) msg = "Outstanding! You're exam-ready. 🎉";
+  else if (pct >= 75) msg = "Great work! Review the topics where you missed questions.";
+  else if (pct >= 60) msg = "Good effort. Focus on the categories where you're struggling.";
+  else msg = "Keep studying! Go back to your lecture slides and try again.";
+  document.getElementById('result-msg').textContent = msg;
+
+  const cats = [
+    { key: 'muscular', label: 'Muscular System' },
+    { key: 'nsorg', label: 'NS Organization' },
+    { key: 'nssig', label: 'NS Signaling' },
+  ];
+  const breakdown = document.getElementById('cat-breakdown');
+  breakdown.innerHTML = cats.map(cat => {
+    const catQs = QUESTIONS.filter(q => q.cat === cat.key);
+    const catAnswered = catQs.filter(q => answered[q.id]);
+    const catCorrect = catAnswered.filter(q => answered[q.id].correct).length;
+    const catPct = catAnswered.length > 0 ? Math.round((catCorrect / catAnswered.length) * 100) : 0;
+    return `<div class="cat-score">
+      <h4>${cat.label}</h4>
+      <div class="num">${catCorrect}/${catAnswered.length}</div>
+      <div style="font-size:0.8rem;color:#666;margin-top:4px">${catAnswered.length > 0 ? catPct + '%' : 'Not started'}</div>
+    </div>`;
+  }).join('');
+}
+
+// Init
+render();
+</script>
+</body>
+</html>
