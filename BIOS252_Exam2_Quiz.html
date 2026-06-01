@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIOS 252 — Exam 2 Practice Quiz</title>
+<style>
+  :root {
+    --navy: #1B2A4A;
+    --teal: #1A6A8A;
+    --gold: #C9A84C;
+    --offwh: #F0F4F8;
+    --white: #FFFFFF;
+    --green: #2E7D32;
+    --red: #C62828;
+    --lteal: #E8F4F8;
+    --lgold: #FDF8EC;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Calibri, 'Segoe UI', sans-serif;
+    background: var(--offwh);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+  /* ── Header ── */
+  header {
+    background: var(--navy);
+    color: var(--white);
+    padding: 0;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+  }
+  .header-title { font-size: 1.4rem; font-weight: bold; }
+  .header-sub { font-size: 0.85rem; opacity: 0.8; margin-top: 2px; }
+  .gold-bar { height: 6px; background: var(--gold); }
+
+  /* ── Main Layout ── */
+  .container { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+
+  /* ── Progress bar ── */
+  .progress-wrap { background: #dce5f0; border-radius: 8px; height: 10px; margin-bottom: 6px; }
+  .progress-fill { height: 10px; border-radius: 8px; background: var(--gold); transition: width .4s; }
+  .progress-label { font-size: 0.85rem; color: var(--teal); margin-bottom: 20px; }
+
+  /* ── Score bar ── */
+  .score-bar {
+    display: flex; gap: 12px; margin-bottom: 22px; flex-wrap: wrap;
+  }
+  .score-chip {
+    background: var(--navy); color: var(--white); border-radius: 20px;
+    padding: 5px 16px; font-size: 0.85rem; font-weight: bold;
+  }
+  .score-chip.correct-chip { background: var(--green); }
+  .score-chip.wrong-chip { background: var(--red); }
+
+  /* ── Question card ── */
+  .question-card {
+    background: var(--white);
+    border-radius: 14px;
+    border-top: 5px solid var(--teal);
+    box-shadow: 0 3px 12px rgba(27,42,74,.12);
+    padding: 26px 28px 20px;
+    margin-bottom: 20px;
+  }
+  .question-num {
+    font-size: 0.78rem; font-weight: bold; color: var(--teal);
+    text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px;
+  }
+  .question-text {
+    font-size: 1.15rem; font-weight: bold; color: var(--navy);
+    line-height: 1.5; margin-bottom: 22px;
+  }
+
+  /* ── Answer grid ── */
+  .answers-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  @media (max-width: 540px) { .answers-grid { grid-template-columns: 1fr; } }
+
+  .answer-btn {
+    background: var(--offwh);
+    border: 2px solid #c8d5e8;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 0.97rem;
+    font-family: Calibri, 'Segoe UI', sans-serif;
+    color: var(--navy);
+    cursor: pointer;
+    text-align: left;
+    transition: all .18s;
+    line-height: 1.35;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .answer-btn:hover:not(:disabled) {
+    background: var(--lteal); border-color: var(--teal);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(26,106,138,.15);
+  }
+  .answer-label {
+    display: inline-block; min-width: 26px; height: 26px;
+    border-radius: 6px; background: var(--teal); color: var(--white);
+    font-weight: bold; font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .answer-btn.correct {
+    background: #E8F5E9; border-color: var(--green);
+    box-shadow: 0 0 0 2px var(--green);
+  }
+  .answer-btn.correct .answer-label { background: var(--green); }
+  .answer-btn.wrong {
+    background: #FFEBEE; border-color: var(--red);
+    opacity: 0.75;
+  }
+  .answer-btn.wrong .answer-label { background: var(--red); }
+  .answer-btn:disabled { cursor: default; }
+
+  /* ── Feedback box ── */
+  .feedback {
+    border-radius: 10px; padding: 14px 18px;
+    margin-top: 16px; font-size: 0.97rem; line-height: 1.5;
+    display: none;
+  }
+  .feedback.correct { background: #E8F5E9; border-left: 5px solid var(--green); color: #1B5E20; }
+  .feedback.wrong   { background: #FFEBEE; border-left: 5px solid var(--red);   color: #7F0000; }
+  .feedback.show { display: block; }
+  .feedback strong { display: block; font-size: 1rem; margin-bottom: 4px; }
+
+  /* ── Navigation ── */
+  .nav-row {
+    display: flex; justify-content: flex-end; margin-top: 18px;
+  }
+  .btn-next {
+    background: var(--teal); color: var(--white);
+    border: none; border-radius: 8px;
+    padding: 11px 28px; font-size: 1rem; font-weight: bold;
+    font-family: Calibri, sans-serif;
+    cursor: pointer; transition: background .15s;
+    display: none;
+  }
+  .btn-next:hover { background: var(--navy); }
+  .btn-next.show { display: inline-block; }
+
+  /* ── Section badges ── */
+  .section-badge {
+    display: inline-block; background: var(--navy); color: var(--white);
+    border-radius: 4px; padding: 2px 10px; font-size: 0.75rem;
+    font-weight: bold; margin-bottom: 12px; text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+
+  /* ── Results screen ── */
+  #results-screen { display: none; }
+  .results-card {
+    background: var(--white); border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(27,42,74,.12);
+    padding: 36px 36px 32px; text-align: center;
+    border-top: 8px solid var(--gold);
+  }
+  .results-title { font-size: 1.8rem; font-weight: bold; color: var(--navy); margin-bottom: 8px; }
+  .results-score { font-size: 3.5rem; font-weight: bold; color: var(--teal); margin: 18px 0; }
+  .results-detail { font-size: 1rem; color: #555; margin-bottom: 24px; }
+  .results-breakdown {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px; margin: 20px 0;
+  }
+  .breakdown-chip {
+    background: var(--offwh); border-radius: 10px; padding: 14px;
+    border-top: 3px solid var(--teal);
+  }
+  .breakdown-chip .chip-score { font-size: 1.6rem; font-weight: bold; color: var(--navy); }
+  .breakdown-chip .chip-label { font-size: 0.78rem; color: var(--teal); margin-top: 3px; }
+  .btn-restart {
+    background: var(--gold); color: var(--navy); border: none;
+    border-radius: 8px; padding: 12px 32px;
+    font-size: 1rem; font-weight: bold; cursor: pointer;
+    font-family: Calibri, sans-serif; margin-top: 10px;
+    transition: background .15s;
+  }
+  .btn-restart:hover { background: var(--navy); color: var(--white); }
+
+  /* ── Start screen ── */
+  #start-screen { }
+  .start-card {
+    background: var(--white); border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(27,42,74,.12);
+    padding: 40px 36px; text-align: center;
+    border-top: 8px solid var(--teal);
+  }
+  .start-title { font-size: 1.6rem; font-weight: bold; color: var(--navy); margin-bottom: 10px; }
+  .start-sub { font-size: 1rem; color: #555; margin-bottom: 24px; line-height: 1.5; }
+  .topic-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px; margin: 20px 0 30px; text-align: left;
+  }
+  .topic-chip {
+    background: var(--offwh); border-left: 4px solid var(--teal);
+    border-radius: 6px; padding: 8px 12px;
+    font-size: 0.9rem; color: var(--navy);
+  }
+  .btn-start {
+    background: var(--teal); color: var(--white); border: none;
+    border-radius: 8px; padding: 14px 40px;
+    font-size: 1.1rem; font-weight: bold; cursor: pointer;
+    font-family: Calibri, sans-serif; transition: background .15s;
+  }
+  .btn-start:hover { background: var(--navy); }
+
+  footer {
+    background: var(--navy); color: var(--gold);
+    text-align: center; padding: 10px;
+    font-size: 0.8rem; position: fixed; bottom: 0; width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="header-title">BIOS 252 — Exam 2 Practice Quiz</div>
+      <div class="header-sub">Weeks 3 &amp; 4 · CNS, PNS, Cranial Nerves &amp; ANS · Laura A. Bates, DC</div>
+    </div>
+    <div id="header-score" style="text-align:right;font-size:0.9rem;opacity:0.9;"></div>
+  </div>
+  <div class="gold-bar"></div>
+</header>
+
+<div class="container">
+
+  <!-- START SCREEN -->
+  <div id="start-screen">
+    <div class="start-card">
+      <div class="start-title">🧠 BIOS 252 Exam 2 Practice Quiz</div>
+      <div class="start-sub">
+        42 questions covering all Exam 2 topics. Each question has 4 answer choices.<br>
+        Immediate feedback with rationale after each answer. Track your score as you go!
+      </div>
+      <div class="topic-grid">
+        <div class="topic-chip">🛡️ Meninges &amp; CSF</div>
+        <div class="topic-chip">🩻 Spinal Cord Structure</div>
+        <div class="topic-chip">⬆️ Ascending Sensory Tracts</div>
+        <div class="topic-chip">⬇️ Descending Motor Tracts</div>
+        <div class="topic-chip">🧠 Brain Lobes &amp; Landmarks</div>
+        <div class="topic-chip">🔗 Spinal Nerves &amp; Plexuses</div>
+        <div class="topic-chip">⚡ Reflex Arcs</div>
+        <div class="topic-chip">👁️ Cranial Nerves I–XII</div>
+        <div class="topic-chip">⚙️ Autonomic Nervous System</div>
+      </div>
+      <button class="btn-start" onclick="startQuiz()">Begin Quiz ▶</button>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="quiz-screen" style="display:none;">
+    <div class="progress-wrap"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-label" id="progress-label"></div>
+
+    <div class="score-bar">
+      <div class="score-chip" id="chip-current">Q 1 of 42</div>
+      <div class="score-chip correct-chip" id="chip-correct">✓ 0 Correct</div>
+      <div class="score-chip wrong-chip" id="chip-wrong">✗ 0 Incorrect</div>
+      <div class="score-chip" id="chip-pct" style="background:var(--teal)">— %</div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-num" id="q-num"></div>
+      <div class="section-badge" id="q-section"></div>
+      <div class="question-text" id="q-text"></div>
+      <div class="answers-grid" id="answers-grid"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row"><button class="btn-next" id="btn-next" onclick="nextQuestion()">Next Question →</button></div>
+    </div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div id="results-screen">
+    <div class="results-card">
+      <div class="results-title">🎓 Quiz Complete!</div>
+      <div class="results-score" id="final-score-pct"></div>
+      <div class="results-detail" id="final-score-detail"></div>
+      <div class="results-breakdown" id="results-breakdown"></div>
+      <button class="btn-restart" onclick="restartQuiz()">🔄 Retake Quiz</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>BIOS 252 · Exam 2 Focus Guide · Laura A. Bates, DC</footer>
+
+<script>
+const QUESTIONS = [
+  // ── MENINGES & CSF ──
+  { section:"Meninges & CSF", q:"Using the mnemonic DAP, which meningeal layer is located CLOSEST to the brain tissue?",
+    opts:["Dura mater","Epidural space","Pia mater","Arachnoid mater"], correct:2,
+    rationale:"DAP = Dura → Arachnoid → Pia. Pia mater is the innermost layer, clinging tightly to every fold of the CNS. (Week 3 Slide 9 / Week 4 Slide 4)" },
+
+  { section:"Meninges & CSF", q:"A patient reports the 'worst headache of their life' and their CSF appears yellow-tinged (xanthochromic). What does this suggest?",
+    opts:["Bacterial meningitis","Subarachnoid hemorrhage","Hydrocephalus","Normal finding after LP"], correct:1,
+    rationale:"Xanthochromic (yellow) CSF after the worst headache of someone's life = subarachnoid hemorrhage until proven otherwise. Blood breakdown products stain the CSF yellow. (Week 4 Slide 4)" },
+
+  { section:"Meninges & CSF", q:"The subarachnoid space containing CSF lies between which two meningeal layers?",
+    opts:["Dura mater and epidural space","Dura mater and arachnoid mater","Arachnoid mater and pia mater","Pia mater and brain surface"], correct:2,
+    rationale:"The subarachnoid space is located between the arachnoid mater (above) and pia mater (below) — this is where CSF circulates and the brain literally floats. (Week 3 Slide 9)" },
+
+  { section:"Meninges & CSF", q:"Which cells produce CSF, and where are they located?",
+    opts:["Astrocytes in the cortex","Microglia in the ventricles","Ependymal cells of the choroid plexus","Schwann cells of the dura"], correct:2,
+    rationale:"Ependymal cells line the ventricles and form the choroid plexus, which produces ~500 mL of CSF per day. Only ~150 mL circulates at any given time. (Week 3 Slide 10)" },
+
+  { section:"Meninges & CSF", q:"After CSF circulates through the subarachnoid space, it is reabsorbed into venous blood via which structure?",
+    opts:["Choroid plexus","Pia mater vessels","Arachnoid villi/granulations","Foramen of Magendie"], correct:2,
+    rationale:"Arachnoid villi (granulations) act like one-way valves that drain CSF into the dural venous sinuses. Blockage → hydrocephalus. (Week 3 Slide 10 / Week 4 Slide 4)" },
+
+  // ── SPINAL CORD STRUCTURE ──
+  { section:"Spinal Cord Structure", q:"A patient sustains a spinal cord injury at C3. What is the PRIMARY respiratory concern?",
+    opts:["Loss of limb sensation only","Inability to control bladder","Loss of diaphragm function — cannot breathe independently","Autonomic dysreflexia"], correct:2,
+    rationale:"'C3, 4, and 5 keep the diaphragm alive.' The phrenic nerve (C3–C5) drives the diaphragm. Injury at or above C4 eliminates independent breathing — ventilator required. (Week 3 Slide 12, 23)" },
+
+  { section:"Spinal Cord Structure", q:"The gray matter of the spinal cord forms a butterfly shape. The DORSAL horn primarily handles which function?",
+    opts:["Motor output to skeletal muscles","Autonomic visceral control","Sensory input from the body","CSF production"], correct:2,
+    rationale:"Dorsal horn = SENSORY (receives incoming signals). Ventral horn = MOTOR (sends commands to muscles). Lateral horn = AUTONOMIC. Think: Dorsal = sensory DATA coming In. (Week 3 Slide 12)" },
+
+  { section:"Spinal Cord Structure", q:"Where are the neuron cell bodies that control VISCERAL (autonomic) motor function located in the spinal cord?",
+    opts:["Dorsal horn","Ventral horn","Lateral horn","Dorsal root ganglion"], correct:2,
+    rationale:"The lateral horn (T1–L2 for sympathetic; S2–S4 for parasympathetic) contains preganglionic autonomic cell bodies for visceral motor control. (Week 3 Slide 12)" },
+
+  { section:"Spinal Cord Structure", q:"The spinal cord ends as the conus medullaris at approximately which vertebral level?",
+    opts:["T12","L1–L2","L4–L5","S1–S2"], correct:1,
+    rationale:"The conus medullaris ends at L1–L2. Below this, nerve roots continue as the cauda equina ('horse's tail'). This is why LP is performed at L3–L4 — the cord itself is safely above. (Week 3 Slide 12)" },
+
+  // ── ASCENDING TRACTS ──
+  { section:"Ascending Sensory Tracts", q:"Pain and temperature signals in the lateral spinothalamic tract cross the midline at which location?",
+    opts:["In the medulla oblongata","At the level they enter the spinal cord","In the midbrain","In the thalamus"], correct:1,
+    rationale:"The spinothalamic tract crosses (decussates) at the LEVEL IT ENTERS the cord — immediately. This means pain/temp signals from the right side travel up the LEFT side of the cord. (Week 3 Slide 13)" },
+
+  { section:"Ascending Sensory Tracts", q:"A patient with a right-sided spinal cord hemisection (Brown-Séquard) loses pain and temperature sensation on which side BELOW the injury?",
+    opts:["Right side (ipsilateral)","Left side (contralateral)","Bilateral equal loss","No loss — spinothalamic is bilateral"], correct:1,
+    rationale:"Spinothalamic tract crosses at entry level. Injuring the RIGHT cord disrupts fibers coming from the LEFT that already crossed — so pain/temp loss is CONTRALATERAL (left). Meanwhile, proprioception loss is ipsilateral (dorsal columns haven't crossed yet). (Week 3 Slide 13)" },
+
+  { section:"Ascending Sensory Tracts", q:"The dorsal column (medial lemniscal) pathway carries fine touch, vibration, and proprioception. Where does it DECUSSATE?",
+    opts:["At the level it enters the cord","In the pons","In the medulla","In the primary somatosensory cortex"], correct:2,
+    rationale:"Dorsal columns travel UP THE SAME SIDE first, then cross in the medulla. This is the key difference from the spinothalamic tract. Explains Brown-Séquard: ipsilateral proprioception loss (hasn't crossed yet) + contralateral pain/temp loss. (Week 3 Slide 13)" },
+
+  { section:"Ascending Sensory Tracts", q:"Which ascending spinal cord pathway carries UNCONSCIOUS proprioception and kinesthesia to the cerebellum?",
+    opts:["Lateral spinothalamic tract","Dorsal column-medial lemniscal pathway","Spinocerebellar tract","Spinotectal tract"], correct:2,
+    rationale:"The spinocerebellar tract carries unconscious proprioception (body position sense during movement) to the cerebellum ipsilaterally — allowing smooth, coordinated movement without conscious thought. (Week 3 Slide 13)" },
+
+  // ── DESCENDING TRACTS ──
+  { section:"Descending Motor Tracts", q:"The lateral corticospinal tract decussates in the medulla. A stroke affecting the LEFT motor cortex causes weakness on which side?",
+    opts:["Left side (ipsilateral)","Right side (contralateral)","Bilateral weakness","Depends on injury severity only"], correct:1,
+    rationale:"The lateral corticospinal tract crosses at the pyramidal decussation in the medulla — left brain controls right body. Left hemisphere stroke = right-sided weakness (contralateral). (Week 3 Slide 14 / Week 4 Slide 8)" },
+
+  { section:"Descending Motor Tracts", q:"An upper motor neuron (UMN) lesion produces which combination of clinical findings?",
+    opts:["Flaccidity, muscle atrophy, hyporeflexia","Spasticity, hyperreflexia, positive Babinski sign","Fasciculations, muscle wasting, absent reflexes","Sensory loss only, no motor change"], correct:1,
+    rationale:"UMN lesion (brain or spinal cord) = spasticity + hyperreflexia + positive Babinski. LMN lesion (peripheral nerve, anterior horn) = flaccidity + atrophy + hyporeflexia + fasciculations. (Week 3 Slide 14)" },
+
+  { section:"Descending Motor Tracts", q:"Which DESCENDING motor pathway maintains posture and balance in response to head movement and remains UNCROSSED?",
+    opts:["Lateral corticospinal tract","Rubrospinal tract","Vestibulospinal tract","Tectospinal tract"], correct:2,
+    rationale:"The vestibulospinal tract is uncrossed, maintains posture/balance in response to head movement via input from the vestibular apparatus. Damaged in labyrinthitis; contributes to falls in the elderly. (Week 3 Slide 14)" },
+
+  // ── BRAIN LOBES & REGIONS ──
+  { section:"Brain Lobes & Landmarks", q:"Which lobe of the cerebral cortex contains the PRIMARY VISUAL CORTEX?",
+    opts:["Frontal lobe","Temporal lobe","Parietal lobe","Occipital lobe"], correct:3,
+    rationale:"The occipital lobe (posterior, back of head) houses the primary visual cortex. Damage causes cortical blindness — eyes are intact but the brain cannot interpret visual input. (Week 3 Slide 20 / Week 4 Slide 5)" },
+
+  { section:"Brain Lobes & Landmarks", q:"A patient can understand your questions perfectly but cannot produce fluent speech. Which area is MOST LIKELY damaged?",
+    opts:["Wernicke's area (temporal-parietal)","Broca's area (inferior frontal lobe)","Primary motor cortex (precentral gyrus)","Cerebellum"], correct:1,
+    rationale:"Broca's aphasia (expressive): comprehension INTACT, speech production impaired — short, effortful, telegraphic output. Wernicke's aphasia is the opposite: fluent but nonsensical 'word salad.' (Week 3 Slide 20 / Week 4 Slide 8,10)" },
+
+  { section:"Brain Lobes & Landmarks", q:"Which sulcus separates the primary MOTOR cortex (precentral gyrus) from the primary SOMATOSENSORY cortex (postcentral gyrus)?",
+    opts:["Lateral (Sylvian) fissure","Longitudinal fissure","Central sulcus","Calcarine sulcus"], correct:2,
+    rationale:"The central sulcus is the key boundary: motor cortex = precentral gyrus (FRONTAL, ANTERIOR to central sulcus); somatosensory cortex = postcentral gyrus (PARIETAL, POSTERIOR). (Week 4 Slide 5,8)" },
+
+  { section:"Brain Lobes & Landmarks", q:"The THALAMUS is the 'Grand Central Station' for sensory information. Which sensory modality BYPASSES the thalamus on its way to the cortex?",
+    opts:["Pain and temperature","Vision","Hearing","Smell (olfaction)"], correct:3,
+    rationale:"Olfaction (smell) is the ONLY sense that bypasses the thalamus and goes directly to the limbic system (amygdala, hippocampus) — which is why smells trigger vivid emotional memories. (Week 3 Slide 19 / Week 4 Slide 6)" },
+
+  { section:"Brain Lobes & Landmarks", q:"The hippocampus is the first structure damaged in Alzheimer's disease. This explains why patients typically:",
+    opts:["Lose all memories at once","Cannot form new memories but recall the distant past","Lose language comprehension first","Experience motor tremors before memory loss"], correct:1,
+    rationale:"Hippocampus = gateway to long-term memory formation. When damaged first in Alzheimer's, patients CANNOT FORM NEW MEMORIES. Old long-term memories stored in the cortex initially survive — so they remember the past but not yesterday. (Week 4 Slide 10,11)" },
+
+  // ── SPINAL NERVES & PLEXUSES ──
+  { section:"Spinal Nerves & Plexuses", q:"Which nerve, arising from the CERVICAL PLEXUS (C3–C5), innervates the diaphragm?",
+    opts:["Sciatic nerve","Femoral nerve","Phrenic nerve","Radial nerve"], correct:2,
+    rationale:"The phrenic nerve (C3–C5) from the cervical plexus is the SOLE motor supply to the diaphragm. Mnemonic: 'C3, 4, and 5 keep the diaphragm alive.' (Week 3 Slide 23)" },
+
+  { section:"Spinal Nerves & Plexuses", q:"A patient develops a painful rash following a single thoracic dermatome on ONE SIDE, never crossing the midline. This is classic for:",
+    opts:["Contact dermatitis","Shingles (Herpes Zoster) reactivation","Lumbar disc herniation","Brachial plexus injury"], correct:1,
+    rationale:"Shingles: Varicella zoster virus lies dormant in the dorsal root ganglion (DRG). Reactivation → painful vesicular rash following EXACTLY one dermatome. Never crosses midline — hallmark for diagnosis. (Week 3 Slide 22–24)" },
+
+  { section:"Spinal Nerves & Plexuses", q:"The SCIATIC NERVE (the longest nerve in the body) originates from which plexus?",
+    opts:["Cervical plexus","Brachial plexus","Lumbar plexus","Sacral plexus"], correct:3,
+    rationale:"The sciatic nerve (L4–S3) arises from the SACRAL PLEXUS. It passes through the posterior thigh and divides at the knee. Compression (L4–L5 or L5–S1 disc herniation) = sciatica. (Week 3 Slide 23)" },
+
+  { section:"Spinal Nerves & Plexuses", q:"The dorsal root of a spinal nerve always contains which type of fibers?",
+    opts:["Motor efferent fibers only","Both sensory and motor fibers","Sensory afferent fibers only","Autonomic postganglionic fibers only"], correct:2,
+    rationale:"SAME DAVE: Sensory Afferent Medial/Dorsal; Efferent Anterior Ventral Exits. The dorsal root carries SENSORY (afferent) fibers INTO the cord, and always contains the dorsal root ganglion (DRG) — a cluster of sensory cell bodies. (Week 3 Slide 22)" },
+
+  // ── REFLEXES ──
+  { section:"Reflex Arcs", q:"The patellar tendon (knee-jerk) reflex is MONOSYNAPTIC, meaning it has only ONE synapse. Which spinal cord levels does it test?",
+    opts:["C5–C6","T10–T12","L2–L4","S1–S2"], correct:2,
+    rationale:"Patellar reflex = L2–L4 cord integrity. One synapse (afferent → motor neuron directly in anterior horn). Compare: Achilles reflex = S1; Biceps reflex = C5–C6. (Week 3 Slide 27)" },
+
+  { section:"Reflex Arcs", q:"When testing the Babinski sign in a NORMAL ADULT, what response is expected when stroking the lateral sole of the foot?",
+    opts:["Big toe extends upward with fanning of other toes","All toes flex/curl downward","No response","Ankle jerks involuntarily"], correct:1,
+    rationale:"Normal adult = plantar flexion (all toes curl DOWN). Abnormal/positive Babinski = big toe extends UP with fanning of other toes — this indicates an UPPER MOTOR NEURON lesion (brain or cord). (Week 3 Slide 27)" },
+
+  { section:"Reflex Arcs", q:"During a withdrawal (flexor) reflex of one leg, the crossed-extensor reflex simultaneously causes the OPPOSITE limb to:",
+    opts:["Flex and withdraw","Remain motionless","Extend and bear weight","Relax completely"], correct:2,
+    rationale:"The crossed-extensor reflex is essential for balance during walking. When one limb flexes to withdraw from pain, the OPPOSITE limb EXTENDS to support body weight and prevent falling. (Week 3 Slide 27)" },
+
+  // ── CRANIAL NERVES ──
+  { section:"Cranial Nerves", q:"The mnemonic 'LR6SO4' describes which cranial nerves control specific eye movements. What does it mean?",
+    opts:["LR4, SO6","LR3, SO4","LR6, SO4","LR5, SO3"], correct:2,
+    rationale:"LR6SO4: Lateral Rectus = CN VI (Abducens); Superior Oblique = CN IV (Trochlear); all other extraocular muscles = CN III (Oculomotor). (Week 4 Slide 21,22,24)" },
+
+  { section:"Cranial Nerves", q:"A patient has complete unilateral facial drooping INCLUDING the forehead and inability to close the eye. This is MOST consistent with:",
+    opts:["Left hemisphere stroke","CN VII Bell's Palsy (peripheral lesion)","Right hemisphere TIA","CN V trigeminal neuralgia"], correct:1,
+    rationale:"Bell's Palsy (PERIPHERAL CN VII lesion): ENTIRE face droops including forehead and eyebrow. Stroke (central/UMN lesion): lower face droops but FOREHEAD IS SPARED because the forehead has bilateral cortical representation. This distinction is tested on boards. (Week 4 Slide 25)" },
+
+  { section:"Cranial Nerves", q:"Testing CN VII (facial), which muscle finding is KEY to distinguishing Bell's Palsy from a central stroke?",
+    opts:["Orbicularis oris (lips)","Zygomaticus (cheek elevation)","Frontalis (forehead raising)","Buccinator (cheek puffing)"], correct:2,
+    rationale:"The FOREHEAD (frontalis muscle) is the critical distinguisher. Bell's Palsy (peripheral): forehead also droops — entire unilateral face. Stroke (central): forehead is SPARED because it receives bilateral cortical input — one hemisphere compensates. (Week 4 Slide 25)" },
+
+  { section:"Cranial Nerves", q:"When testing CN XII (Hypoglossal), a patient protrudes their tongue. If CN XII is damaged on the RIGHT side, the tongue deviates toward which side?",
+    opts:["Left (away from lesion)","Right (toward the lesion)","Straight out — no deviation","It cannot protrude at all"], correct:1,
+    rationale:"Tongue deviates TOWARD the WEAK (lesion) side — the intact side pushes harder. CN XII damage = right CN XII damaged → right side is weak → tongue pushed toward right by the stronger left genioglossus. (Week 4 Slide 29,31)" },
+
+  { section:"Cranial Nerves", q:"Which cranial nerve carries taste from the POSTERIOR 1/3 of the tongue AND monitors the carotid body/sinus for blood pressure and oxygen levels?",
+    opts:["CN VII Facial","CN IX Glossopharyngeal","CN X Vagus","CN V Trigeminal"], correct:1,
+    rationale:"CN IX (Glossopharyngeal): taste post 1/3 tongue, gag reflex afferent limb, carotid body/sinus monitoring (O2, BP, baroreceptors), parasympathetic to parotid gland. (Week 4 Slide 27,31)" },
+
+  { section:"Cranial Nerves", q:"The gag reflex requires two cranial nerves. CN IX is the afferent (sensory) limb. Which cranial nerve provides the efferent (motor) response?",
+    opts:["CN VII","CN VIII","CN X","CN XII"], correct:2,
+    rationale:"Gag reflex: CN IX (Glossopharyngeal) = senses stimulus at posterior pharynx → CN X (Vagus) = motor response (pharyngeal muscles contract). Absent gag = high aspiration risk before feeding. (Week 4 Slide 27)" },
+
+  { section:"Cranial Nerves", q:"Which cranial nerve has the widest distribution, providing parasympathetic innervation to the heart, lungs, and GI tract to the splenic flexure?",
+    opts:["CN IX Glossopharyngeal","CN X Vagus","CN XI Spinal Accessory","CN V Trigeminal"], correct:1,
+    rationale:"CN X (Vagus) = 'The Wanderer' — the most widespread cranial nerve. Parasympathetic: ↓HR, bronchoconstriction, stimulates entire GI from esophagus to splenic flexure. Vasovagal syncope = massive vagal discharge → bradycardia + fainting. (Week 4 Slide 27,31)" },
+
+  // ── ANS ──
+  { section:"Autonomic Nervous System", q:"BOTH the sympathetic and parasympathetic divisions use the same neurotransmitter for the PREGANGLIONIC neuron. What is it?",
+    opts:["Norepinephrine (NE)","Dopamine","Acetylcholine (ACh)","Serotonin"], correct:2,
+    rationale:"EXAM TRAP: BOTH divisions use ACETYLCHOLINE (ACh) for the preganglionic neuron. The difference is POSTganglionic: Sympathetic = NE/Epi; Parasympathetic = ACh. (Week 4 Slide 33,34)" },
+
+  { section:"Autonomic Nervous System", q:"The sympathetic postganglionic neuron releases which neurotransmitter onto target organs (with one important exception)?",
+    opts:["Acetylcholine (ACh)","Norepinephrine (NE) / Epinephrine","Serotonin","GABA"], correct:1,
+    rationale:"Sympathetic postganglionic = NE/Epinephrine (noradrenergic). Exception: sweat glands use ACh even though they're sympathetically innervated. Parasympathetic postganglionic always uses ACh. (Week 4 Slide 33,34)" },
+
+  { section:"Autonomic Nervous System", q:"Where do the cell bodies of SYMPATHETIC PREGANGLIONIC neurons originate in the spinal cord?",
+    opts:["Craniosacral: brainstem and sacral cord","T1–L2 (thoracolumbar cord)","Paraspinal ganglia chain","Terminal ganglia near target organs"], correct:1,
+    rationale:"Sympathetic = THORACOLUMBAR origin (T1–L2). Parasympathetic = CRANIOSACRAL origin (CN III, VII, IX, X + S2–S4). 'Thoracolumbar' is the sympathetic division's key anatomical identifier. (Week 4 Slide 33)" },
+
+  { section:"Autonomic Nervous System", q:"During a 'fight or flight' response, which combination of ANS effects would you EXPECT?",
+    opts:["Decreased HR, bronchodilation, increased digestion","Increased HR, bronchodilation, decreased GI motility","Decreased HR, bronchoconstriction, increased GI motility","Increased HR, bronchoconstriction, pupil constriction"], correct:1,
+    rationale:"Fight or flight (sympathetic): ↑HR, bronchodilation (to get more O2), ↓GI motility (blood shunted away from gut), pupil dilation. Parasympathetic is the OPPOSITE: ↓HR, bronchoconstriction, ↑digestion. (Week 4 Slide 33)" },
+
+  { section:"Autonomic Nervous System", q:"A T4 SCI patient suddenly develops severe hypertension, bradycardia, and sweating above the injury after bladder distension. This is MOST likely:",
+    opts:["Vasovagal syncope","Hemorrhagic stroke","Autonomic dysreflexia","Horner's syndrome"], correct:2,
+    rationale:"Autonomic dysreflexia (AD): SCI at T6 or above → uninhibited sympathetic surge from noxious stimulus below injury → massive hypertension. The FIRST intervention is finding and removing the trigger — check the catheter for kinking or fullness. (Week 4 Slide 35)" },
+
+  { section:"Autonomic Nervous System", q:"The adrenal medulla acts as a modified sympathetic ganglion. It releases which substances directly into the bloodstream?",
+    opts:["Acetylcholine and dopamine","Epinephrine (80%) and Norepinephrine (20%)","Cortisol and aldosterone only","Norepinephrine (80%) and Epinephrine (20%)"], correct:1,
+    rationale:"Adrenal medulla bypasses the postganglionic neuron entirely, releasing Epinephrine (80%) + Norepinephrine (20%) directly into the bloodstream. This systemic response is why an EpiPen works immediately in anaphylaxis. (Week 4 Slide 34)" },
+
+  { section:"Autonomic Nervous System", q:"Horner's Syndrome results from disruption of the cervical sympathetic chain. Which CLASSIC TRIAD of signs results?",
+    opts:["Ptosis + miosis + anhidrosis (ipsilateral)","Exophthalmos + tachycardia + diarrhea","Ptosis + mydriasis + hyperhidrosis (bilateral)","Facial droop + hearing loss + vertigo"], correct:0,
+    rationale:"Horner's Syndrome triad (all IPSILATERAL): Ptosis (drooping eyelid — loss of Müller's muscle sympathetic tone), Miosis (pupil constriction — unopposed parasympathetic), Anhidrosis (loss of facial sweating). Causes: Pancoast tumor, carotid dissection, lateral medullary stroke. (Week 4 Slide 35)" },
+];
+
+let currentQ = 0;
+let score = { correct: 0, wrong: 0 };
+let sectionScores = {};
+let answered = false;
+
+function startQuiz() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  currentQ = 0; score = { correct:0, wrong:0 }; sectionScores = {};
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  answered = false;
+  document.getElementById('q-num').textContent = `Question ${currentQ + 1} of ${QUESTIONS.length}`;
+  document.getElementById('q-section').textContent = q.section;
+  document.getElementById('q-text').textContent = q.q;
+
+  const grid = document.getElementById('answers-grid');
+  grid.innerHTML = '';
+  const labels = ['A','B','C','D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.innerHTML = `<span class="answer-label">${labels[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.innerHTML = '';
+  document.getElementById('btn-next').className = 'btn-next';
+
+  const pct = ((currentQ) / QUESTIONS.length) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `Progress: ${currentQ} of ${QUESTIONS.length} answered`;
+  updateScoreBar();
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = QUESTIONS[currentQ];
+  const btns = document.querySelectorAll('.answer-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const isCorrect = idx === q.correct;
+  btns[idx].classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) btns[q.correct].classList.add('correct');
+
+  if (isCorrect) { score.correct++; } else { score.wrong++; }
+
+  if (!sectionScores[q.section]) sectionScores[q.section] = { correct:0, total:0 };
+  sectionScores[q.section].total++;
+  if (isCorrect) sectionScores[q.section].correct++;
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'wrong');
+  fb.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✗ Incorrect — Correct answer: ' + q.opts[q.correct]}</strong>${q.rationale}`;
+
+  document.getElementById('btn-next').className = 'btn-next show';
+  updateScoreBar();
+}
+
+function updateScoreBar() {
+  const total = score.correct + score.wrong;
+  const pct = total > 0 ? Math.round((score.correct / total) * 100) : 0;
+  document.getElementById('chip-current').textContent = `Q ${currentQ + 1} of ${QUESTIONS.length}`;
+  document.getElementById('chip-correct').textContent = `✓ ${score.correct} Correct`;
+  document.getElementById('chip-wrong').textContent = `✗ ${score.wrong} Incorrect`;
+  document.getElementById('chip-pct').textContent = total > 0 ? `${pct}%` : '—%';
+  document.getElementById('header-score').innerHTML = total > 0 ? `Score: ${score.correct}/${total} (${pct}%)` : '';
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= QUESTIONS.length) { showResults(); return; }
+  renderQuestion();
+}
+
+function showResults() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'block';
+  const total = QUESTIONS.length;
+  const pct = Math.round((score.correct / total) * 100);
+  document.getElementById('final-score-pct').textContent = `${pct}%`;
+  document.getElementById('final-score-detail').textContent = `${score.correct} correct out of ${total} questions`;
+
+  const breakdown = document.getElementById('results-breakdown');
+  breakdown.innerHTML = '';
+  Object.entries(sectionScores).forEach(([section, data]) => {
+    const sp = Math.round((data.correct / data.total) * 100);
+    const chip = document.createElement('div');
+    chip.className = 'breakdown-chip';
+    chip.innerHTML = `<div class="chip-score">${data.correct}/${data.total}</div><div class="chip-label">${section} (${sp}%)</div>`;
+    breakdown.appendChild(chip);
+  });
+}
+
+function restartQuiz() {
+  document.getElementById('results-screen').style.display = 'none';
+  startQuiz();
+}
+</script>
+</body>
+</html>
